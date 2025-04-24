@@ -1,54 +1,14 @@
-<?php
-require_once 'layouts/header.php';
-
-// اتصال به دیتابیس برای دریافت آمار
-$db = Database::getInstance()->getConnection();
-
-// دریافت تعداد کل خطاها
-$stmt = $db->query("SELECT COUNT(*) FROM locomotive_errors");
-$total_errors = $stmt->fetchColumn();
-
-// دریافت تعداد کاربران (فقط برای ادمین)
-$total_users = 0;
-$pending_users = 0;
-if (is_admin()) {
-    $stmt = $db->query("SELECT COUNT(*) FROM users");
-    $total_users = $stmt->fetchColumn();
-    
-    $stmt = $db->query("SELECT COUNT(*) FROM users WHERE status = 'pending'");
-    $pending_users = $stmt->fetchColumn();
-}
-?>
+<?php require_once 'views/layouts/header.php'; ?>
 
 <div class="container-fluid mt-4">
     <div class="row">
         <!-- Sidebar -->
-        <div class="col-md-3 col-lg-2">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    منوی کاربری
-                </div>
-                <div class="list-group list-group-flush">
-                    <a href="<?php echo BASE_URL; ?>/dashboard" class="list-group-item list-group-item-action active">
-                        <i class="bi bi-speedometer2"></i> داشبورد
-                    </a>
-                    <a href="<?php echo BASE_URL; ?>/errors/search" class="list-group-item list-group-item-action">
-                        <i class="bi bi-search"></i> جستجوی خطاها
-                    </a>
-                    <?php if (is_admin()): ?>
-                        <a href="<?php echo BASE_URL; ?>/admin/users" class="list-group-item list-group-item-action">
-                            <i class="bi bi-people"></i> مدیریت کاربران
-                        </a>
-                        <a href="<?php echo BASE_URL; ?>/admin/settings" class="list-group-item list-group-item-action">
-                            <i class="bi bi-gear"></i> تنظیمات
-                        </a>
-                    <?php endif; ?>
-                </div>
-            </div>
+        <div class="col-md-3">
+            <?php require_once 'views/layouts/sidebar.php'; ?>
         </div>
 
         <!-- Main Content -->
-        <div class="col-md-9 col-lg-10">
+        <div class="col-md-9">
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="card">
@@ -65,45 +25,64 @@ if (is_admin()) {
                     <div class="card bg-primary text-white h-100">
                         <div class="card-body">
                             <h5 class="card-title">تعداد کل خطاها</h5>
-                            <h2 class="display-4"><?php echo number_format($total_errors); ?></h2>
+                            <h2 class="display-4">
+                                <?php
+                                $stmt = $db->query("SELECT COUNT(*) FROM locomotive_errors");
+                                echo number_format($stmt->fetchColumn());
+                                ?>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card bg-warning h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">خطاهای حل نشده</h5>
+                            <h2 class="display-4">
+                                <?php
+                                $stmt = $db->query("SELECT COUNT(*) FROM locomotive_errors WHERE status = 'open'");
+                                echo number_format($stmt->fetchColumn());
+                                ?>
+                            </h2>
                         </div>
                     </div>
                 </div>
 
                 <?php if (is_admin()): ?>
-                    <div class="col-md-4">
-                        <div class="card bg-success text-white h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">تعداد کل کاربران</h5>
-                                <h2 class="display-4"><?php echo number_format($total_users); ?></h2>
-                            </div>
+                <div class="col-md-4">
+                    <div class="card bg-info text-white h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">کاربران فعال</h5>
+                            <h2 class="display-4">
+                                <?php
+                                $stmt = $db->query("SELECT COUNT(*) FROM users WHERE status = 'active'");
+                                echo number_format($stmt->fetchColumn());
+                                ?>
+                            </h2>
                         </div>
                     </div>
-
-                    <div class="col-md-4">
-                        <div class="card bg-warning h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">کاربران در انتظار تایید</h5>
-                                <h2 class="display-4"><?php echo number_format($pending_users); ?></h2>
-                            </div>
-                        </div>
-                    </div>
+                </div>
                 <?php endif; ?>
             </div>
 
             <!-- Recent Errors -->
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">آخرین خطاهای ثبت شده</h5>
+                    <a href="<?php echo BASE_URL; ?>/errors" class="btn btn-primary btn-sm">
+                        مشاهده همه
+                    </a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover">
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
                                     <th>کد خطا</th>
+                                    <th>شدت</th>
                                     <th>توضیحات</th>
-                                    <th>دسته‌بندی</th>
+                                    <th>نوع لوکوموتیو</th>
                                     <th>تاریخ ثبت</th>
                                     <th>عملیات</th>
                                 </tr>
@@ -115,28 +94,36 @@ if (is_admin()) {
                                 
                                 if (empty($recent_errors)): ?>
                                     <tr>
-                                        <td colspan="5" class="text-center">هیچ خطایی ثبت نشده است</td>
+                                        <td colspan="6" class="text-center">هیچ خطایی ثبت نشده است</td>
                                     </tr>
                                 <?php else:
                                     foreach ($recent_errors as $error): ?>
                                         <tr>
-                                            <td><?php echo htmlspecialchars($error['error_code']); ?></td>
-                                            <td><?php echo htmlspecialchars(substr($error['description'], 0, 100)) . '...'; ?></td>
-                                            <td><?php echo htmlspecialchars($error['category']); ?></td>
-                                            <td><?php echo date('Y/m/d H:i', strtotime($error['created_at'])); ?></td>
                                             <td>
-                                                <a href="<?php echo BASE_URL; ?>/errors/view/<?php echo $error['id']; ?>" class="btn btn-sm btn-info">
+                                                <a href="<?php echo BASE_URL; ?>/errors/view/<?php echo $error['id']; ?>">
+                                                    <?php echo htmlspecialchars($error['error_code']); ?>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-<?php
+                                                    echo match($error['severity']) {
+                                                        'critical' => 'danger',
+                                                        'major' => 'warning',
+                                                        'minor' => 'info',
+                                                        'warning' => 'secondary'
+                                                    };
+                                                ?>">
+                                                    <?php echo get_severity_label($error['severity']); ?>
+                                                </span>
+                                            </td>
+                                            <td><?php echo htmlspecialchars(substr($error['description'], 0, 50)) . '...'; ?></td>
+                                            <td><?php echo htmlspecialchars($error['locomotive_type']); ?></td>
+                                            <td><?php echo format_date($error['created_at']); ?></td>
+                                            <td>
+                                                <a href="<?php echo BASE_URL; ?>/errors/view/<?php echo $error['id']; ?>" 
+                                                   class="btn btn-sm btn-info" title="مشاهده">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
-                                                <?php if (is_admin()): ?>
-                                                    <a href="<?php echo BASE_URL; ?>/errors/edit/<?php echo $error['id']; ?>" class="btn btn-sm btn-warning">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </a>
-                                                    <button type="button" class="btn btn-sm btn-danger" 
-                                                            onclick="confirmDelete('<?php echo BASE_URL; ?>/errors/delete/<?php echo $error['id']; ?>')">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                <?php endif; ?>
                                             </td>
                                         </tr>
                                     <?php endforeach;
@@ -150,23 +137,4 @@ if (is_admin()) {
     </div>
 </div>
 
-<script>
-function confirmDelete(url) {
-    Swal.fire({
-        title: 'آیا مطمئن هستید؟',
-        text: "این عملیات قابل بازگشت نیست!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'بله، حذف شود',
-        cancelButtonText: 'انصراف'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = url;
-        }
-    });
-}
-</script>
-
-<?php require_once 'layouts/footer.php'; ?>
+<?php require_once 'views/layouts/footer.php'; ?>

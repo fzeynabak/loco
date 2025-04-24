@@ -3,8 +3,9 @@
 <div class="container-fluid mt-4">
     <div class="row">
         <div class="col-md-3">
+            <?php require_once 'views/layouts/sidebar.php'; ?>
             <!-- نمایش درختی خطا -->
-            <div class="card mb-4">
+            <div class="card mt-4">
                 <div class="card-header">
                     <h5 class="mb-0">ساختار درختی خطا</h5>
                 </div>
@@ -14,7 +15,7 @@
             </div>
             
             <!-- اطلاعات ثبت و بروزرسانی -->
-            <div class="card">
+            <div class="card mt-4">
                 <div class="card-header">
                     <h5 class="mb-0">اطلاعات سیستمی</h5>
                 </div>
