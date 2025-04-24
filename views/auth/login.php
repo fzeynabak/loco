@@ -10,8 +10,9 @@
                 <div class="card-body p-4">
                     <?php show_flash_messages(); ?>
                     
-                    <form action="<?php echo BASE_URL; ?>/login" method="POST" class="needs-validation" novalidate>
-                        <?php insert_csrf_token(); ?>
+                    <form action="<?php echo BASE_URL; ?>/login" method="POST" class="needs-validation" novalidate><form action="<?php echo BASE_URL; ?>/login" method="POST" class="needs-validation" novalidate>
+
+                    <?php insert_csrf_token(); ?>
                         
                         <div class="mb-3">
                             <label for="username" class="form-label">نام کاربری</label>
@@ -42,5 +43,15 @@
         </div>
     </div>
 </div>
-
+<script>
+document.querySelector('form').addEventListener('submit', function(e) {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    if (!username || !password) {
+        e.preventDefault();
+        showError('لطفاً نام کاربری و رمز عبور را وارد کنید');
+    }
+});
+</script>
 <?php require_once 'views/layouts/footer.php'; ?>

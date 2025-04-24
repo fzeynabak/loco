@@ -25,18 +25,19 @@ class AuthController {
                 $user = $stmt->fetch();
                 
                 if ($user && password_verify($password, $user['password'])) {
-                    $_SESSION['user_id'] = $user['id'];
-                    $_SESSION['user_role'] = $user['role'];
-                    $_SESSION['user_name'] = $user['name'];
-                    
-                    session_regenerate_id(true);
-                    redirect('dashboard');
-                    return;
-                } else {
-                    set_flash_message('error', 'نام کاربری یا رمز عبور اشتباه است');
-                    redirect('login');
-                    return;
-                }
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_role'] = $user['role'];
+                $_SESSION['user_name'] = $user['name'];
+                
+                session_regenerate_id(true);
+                set_flash_message('success', 'خوش آمدید ' . $user['name']);
+                redirect('dashboard');
+                return;
+            } else {
+                set_flash_message('error', 'نام کاربری یا رمز عبور اشتباه است');
+                redirect('login');
+                return;
+            }
             } catch (PDOException $e) {
                 error_log($e->getMessage());
                 set_flash_message('error', 'خطا در ورود به سیستم. لطفاً دوباره تلاش کنید');

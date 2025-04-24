@@ -51,7 +51,11 @@
                             <?php if (is_admin()): ?>
                                 <td>
                                     <a href="<?php echo BASE_URL; ?>/errors/edit/<?php echo $error['id']; ?>" class="btn btn-sm btn-info">ویرایش</a>
-                                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(<?php echo $error['id']; ?>)">حذف</button>
+                                    <button type="button" class="btn btn-sm btn-danger" 
+                                            onclick="confirmDelete('<?php echo BASE_URL; ?>/errors/delete/<?php echo $error['id']; ?>', 
+                                                                'آیا از حذف این خطا اطمینان دارید؟')">
+                                        حذف
+                                    </button>
                                 </td>
                             <?php endif; ?>
                         </tr>

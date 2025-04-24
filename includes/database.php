@@ -32,7 +32,6 @@ class Database {
         return $this->conn;
     }
     
-    // جلوگیری از کپی شدن یا بازسازی
     private function __clone() {}
-    private function __wakeup() {}
+    public function __wakeup() {} // تغییر به public
 }

@@ -15,21 +15,20 @@ function redirect($path) {
 
 // توابع مدیریت پیام‌های فلش
 function set_flash_message($type, $message) {
-    $_SESSION['flash_messages'][] = [
+    $_SESSION['sweet_alert'] = [
         'type' => $type,
         'message' => $message
     ];
 }
 
 function show_flash_messages() {
-    if (isset($_SESSION['flash_messages'])) {
-        foreach ($_SESSION['flash_messages'] as $message) {
-            echo '<div class="alert alert-' . $message['type'] . ' alert-dismissible fade show" role="alert">';
-            echo $message['message'];
-            echo '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
-            echo '</div>';
-        }
-        unset($_SESSION['flash_messages']);
+    if (isset($_SESSION['sweet_alert'])) {
+        $message = $_SESSION['sweet_alert'];
+        $type = ($message['type'] === 'error') ? 'error' : 
+                ($message['type'] === 'success' ? 'success' : 'info');
+        
+        show_sweet_alert($type, $message['message']);
+        unset($_SESSION['sweet_alert']);
     }
 }
 
@@ -45,4 +44,15 @@ function insert_csrf_token() {
     $token = bin2hex(random_bytes(32));
     $_SESSION['csrf_token'] = $token;
     echo '<input type="hidden" name="csrf_token" value="' . $token . '">';
+}
+function show_sweet_alert($type, $message) {
+    echo "<script>
+        Swal.fire({
+            icon: '$type',
+            title: '$message',
+            confirmButtonText: 'باشه',
+            timer: 3000,
+            timerProgressBar: true
+        });
+    </script>";
 }
