@@ -23,6 +23,9 @@ function has_permission($permission) {
 
 // توابع پیام‌رسانی
 function set_flash_message($type, $message) {
+    if (!isset($_SESSION['flash_messages'])) {
+        $_SESSION['flash_messages'] = [];
+    }
     $_SESSION['flash_messages'][] = [
         'type' => $type,
         'message' => $message
@@ -34,7 +37,9 @@ function show_flash_message() {
         return;
     }
 
-    echo "<script>";
+    echo "<script>
+    document.addEventListener('DOMContentLoaded', function() {";
+    
     foreach ($_SESSION['flash_messages'] as $message) {
         $icon = match($message['type']) {
             'success' => 'success',
@@ -44,8 +49,9 @@ function show_flash_message() {
             default => 'info'
         };
         
-        echo "Swal.fire({
-            icon: '$icon',
+        echo "
+        Swal.fire({
+            icon: '" . $icon . "',
             title: '" . addslashes($message['message']) . "',
             toast: true,
             position: 'top-end',
@@ -58,7 +64,10 @@ function show_flash_message() {
             }
         });";
     }
-    echo "</script>";
+    
+    echo "
+    });
+    </script>";
     
     $_SESSION['flash_messages'] = [];
 }

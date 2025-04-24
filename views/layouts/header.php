@@ -78,21 +78,4 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
     </nav>
     
-    <script>
-    function confirmLogout() {
-        Swal.fire({
-            title: 'خروج از سیستم',
-            text: 'آیا مطمئن هستید که می‌خواهید خارج شوید؟',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'بله، خارج شوم',
-            cancelButtonText: 'انصراف'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = '<?php echo BASE_URL; ?>/logout';
-            }
-        });
-    }
-    </script>
+    <?php if (function_exists('show_flash_message')) show_flash_message(); ?>

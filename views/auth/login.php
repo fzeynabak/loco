@@ -96,6 +96,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
 
 // نمایش پیام‌های فلش با SweetAlert2
 <?php show_flash_message_script(); ?>
+<?php show_flash_message(); ?>
 </script>
 
 <?php require_once 'views/layouts/footer.php'; ?>
