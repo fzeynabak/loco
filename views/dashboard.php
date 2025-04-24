@@ -4,24 +4,14 @@
     <div class="row">
         <!-- Sidebar -->
         <div class="col-md-3">
-            <?php require_once 'views/layouts/sidebar.php'; ?>
+            <?php include 'views/layouts/sidebar.php'; ?>
         </div>
 
         <!-- Main Content -->
         <div class="col-md-9">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">خوش آمدید <?php echo htmlspecialchars($_SESSION['user_name']); ?></h5>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Stats Cards -->
             <div class="row g-4 mb-4">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <div class="card bg-primary text-white h-100">
                         <div class="card-body">
                             <h5 class="card-title">تعداد کل خطاها</h5>
@@ -35,22 +25,8 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
-                    <div class="card bg-warning h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">خطاهای حل نشده</h5>
-                            <h2 class="display-4">
-                                <?php
-                                $stmt = $db->query("SELECT COUNT(*) FROM locomotive_errors WHERE status = 'open'");
-                                echo number_format($stmt->fetchColumn());
-                                ?>
-                            </h2>
-                        </div>
-                    </div>
-                </div>
-
                 <?php if (is_admin()): ?>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <div class="card bg-info text-white h-100">
                         <div class="card-body">
                             <h5 class="card-title">کاربران فعال</h5>

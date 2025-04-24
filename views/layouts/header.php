@@ -85,7 +85,15 @@
                                     <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>/settings">تنظیمات</a></li>
                                 <?php endif; ?>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>/logout">خروج</a></li>
+                                <li>
+                                    <form action="<?php echo BASE_URL; ?>/logout" method="POST" id="logout-form">
+                                        <?php if (function_exists('insert_csrf_token')) insert_csrf_token(); ?>
+                                    </form>
+                                    <a class="dropdown-item text-danger" href="javascript:void(0)" 
+                                    onclick="if(confirm('آیا مطمئن هستید که می‌خواهید خارج شوید؟')) document.getElementById('logout-form').submit();">
+                                        <i class="bi bi-box-arrow-right"></i> خروج
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>

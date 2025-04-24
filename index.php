@@ -37,9 +37,22 @@ switch ($route) {
         break;
         
     case 'logout':
+        // حذف تمام داده‌های session
+        $_SESSION = array();
+        
+        // حذف کوکی session
+        if (isset($_COOKIE[session_name()])) {
+            setcookie(session_name(), '', time()-42000, '/');
+        }
+        
+        // نابود کردن session
         session_destroy();
-        redirect('login');
+        
+        // ریدایرکت به صفحه لاگین
+        header("Location: " . BASE_URL . "/login");
+        exit;
         break;
+
         
     // مسیرهای مربوط به خطاها
     case 'errors':
@@ -61,4 +74,5 @@ switch ($route) {
     default:
         require_once 'views/404.php';
         break;
+
 }

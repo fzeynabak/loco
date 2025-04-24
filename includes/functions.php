@@ -63,3 +63,19 @@ function get_severity_label($severity) {
         default => $severity
     };
 }
+function generate_csrf_token() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+function insert_csrf_token() {
+    echo '<input type="hidden" name="csrf_token" value="' . htmlspecialchars(generate_csrf_token()) . '">';
+}
+function verify_csrf_token() {
+    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || 
+        $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        return false;
+    }
+    return true;
+}
