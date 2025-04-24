@@ -1,0 +1,116 @@
+/* فونت ایران‌سنس */
+@font-face {
+    font-family: IRANSans;
+    src: url('../fonts/IRANSans.ttf') format('truetype');
+}
+
+/* تنظیمات کلی */
+body {
+    font-family: IRANSans, sans-serif;
+    line-height: 1.6;
+}
+
+.rtl {
+    direction: rtl;
+    text-align: right;
+}
+
+/* بخش هدر */
+.hero-section {
+    padding: 100px 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.min-vh-75 {
+    min-height: 75vh;
+}
+
+/* بخش ویژگی‌ها */
+.features-section .card {
+    transition: transform 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.features-section .card:hover {
+    transform: translateY(-5px);
+}
+
+/* بخش راهنما */
+.guide-section {
+    background-color: #f8f9fa;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* دکمه‌ها */
+.btn {
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0b5ed7;
+}
+
+/* کارت‌ها */
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+/* انیمیشن‌ها */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-section .row > div {
+    animation: fadeIn 1s ease-out;
+}
+
+/* تنظیمات واکنش‌گرا */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 50px 0;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .step {
+        margin-bottom: 2rem;
+    }
+}
+
+/* تنظیمات دسترسی‌پذیری */
+:focus {
+    outline: 3px solid rgba(13, 110, 253, 0.25);
+    outline-offset: 2px;
+}
+
+/* اسکرول نرم */
+html {
+    scroll-behavior: smooth;
+}
