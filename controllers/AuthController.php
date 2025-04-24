@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../includes/database.php';
+
 class AuthController {
     private $db;
     
@@ -14,53 +16,40 @@ class AuthController {
             if (empty($username) || empty($password)) {
                 set_flash_message('error', 'تمام فیلدها الزامی هستند');
                 redirect('login');
+                return;
             }
             
-            // Check login attempts
-            if ($this->isAccountLocked($username)) {
-                set_flash_message('error', 'حساب کاربری شما به دلیل تلاش‌های ناموفق قفل شده است. لطفاً بعداً تلاش کنید');
+            try {
+                $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ? AND status = 'active' LIMIT 1");
+                $stmt->execute([$username]);
+                $user = $stmt->fetch();
+                
+                if ($user && password_verify($password, $user['password'])) {
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['user_role'] = $user['role'];
+                    $_SESSION['user_name'] = $user['name'];
+                    
+                    session_regenerate_id(true);
+                    redirect('dashboard');
+                    return;
+                } else {
+                    set_flash_message('error', 'نام کاربری یا رمز عبور اشتباه است');
+                    redirect('login');
+                    return;
+                }
+            } catch (PDOException $e) {
+                error_log($e->getMessage());
+                set_flash_message('error', 'خطا در ورود به سیستم. لطفاً دوباره تلاش کنید');
                 redirect('login');
-            }
-            
-            $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ? AND status = 'active' LIMIT 1");
-            $stmt->execute([$username]);
-            $user = $stmt->fetch();
-            
-            if ($user && password_verify($password, $user['password'])) {
-                // Reset login attempts
-                $this->resetLoginAttempts($username);
-                
-                // Set session
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_role'] = $user['role'];
-                $_SESSION['user_name'] = $user['name'];
-                
-                // Regenerate session ID for security
-                session_regenerate_id(true);
-                
-                redirect('dashboard');
-            } else {
-                $this->incrementLoginAttempts($username);
-                set_flash_message('error', 'نام کاربری یا رمز عبور اشتباه است');
-                redirect('login');
+                return;
             }
         }
         
-        // Show login form
+        // نمایش فرم ورود
         require_once 'views/auth/login.php';
     }
     
     public function register() {
-        // Check if registration is enabled
-        $stmt = $this->db->prepare("SELECT value FROM settings WHERE key = 'registration_enabled' LIMIT 1");
-        $stmt->execute();
-        $setting = $stmt->fetch();
-        
-        if ($setting && $setting['value'] === '0') {
-            set_flash_message('error', 'ثبت نام در حال حاضر غیرفعال است');
-            redirect('login');
-        }
-        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
             $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
@@ -68,55 +57,51 @@ class AuthController {
             $password = $_POST['password'];
             $password_confirm = $_POST['password_confirm'];
             
-            // Validation
+            // اعتبارسنجی
             if (empty($name) || empty($username) || empty($email) || empty($password)) {
                 set_flash_message('error', 'تمام فیلدها الزامی هستند');
                 redirect('register');
+                return;
             }
             
             if ($password !== $password_confirm) {
                 set_flash_message('error', 'رمز عبور و تکرار آن یکسان نیستند');
                 redirect('register');
+                return;
             }
             
-            // Check username and email uniqueness
-            $stmt = $this->db->prepare("SELECT COUNT(*) FROM users WHERE username = ? OR email = ?");
-            $stmt->execute([$username, $email]);
-            if ($stmt->fetchColumn() > 0) {
-                set_flash_message('error', 'نام کاربری یا ایمیل قبلاً ثبت شده است');
-                redirect('register');
-            }
-            
-            // Create user
-            $stmt = $this->db->prepare("INSERT INTO users (name, username, email, password, role, status, created_at) VALUES (?, ?, ?, ?, 'user', 'pending', NOW())");
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT, ['cost' => HASH_COST]);
-            
-            if ($stmt->execute([$name, $username, $email, $hashed_password])) {
-                set_flash_message('success', 'ثبت نام شما با موفقیت انجام شد. لطفاً منتظر تأیید مدیر بمانید');
-                redirect('login');
-            } else {
+            try {
+                // بررسی تکراری نبودن نام کاربری و ایمیل
+                $stmt = $this->db->prepare("SELECT COUNT(*) FROM users WHERE username = ? OR email = ?");
+                $stmt->execute([$username, $email]);
+                if ($stmt->fetchColumn() > 0) {
+                    set_flash_message('error', 'نام کاربری یا ایمیل قبلاً ثبت شده است');
+                    redirect('register');
+                    return;
+                }
+                
+                // ایجاد کاربر جدید
+                $stmt = $this->db->prepare("INSERT INTO users (name, username, email, password, role, status, created_at) VALUES (?, ?, ?, ?, 'user', 'pending', NOW())");
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                
+                if ($stmt->execute([$name, $username, $email, $hashed_password])) {
+                    set_flash_message('success', 'ثبت نام شما با موفقیت انجام شد. لطفاً منتظر تأیید مدیر بمانید');
+                    redirect('login');
+                    return;
+                } else {
+                    set_flash_message('error', 'خطا در ثبت نام. لطفاً دوباره تلاش کنید');
+                    redirect('register');
+                    return;
+                }
+            } catch (PDOException $e) {
+                error_log($e->getMessage());
                 set_flash_message('error', 'خطا در ثبت نام. لطفاً دوباره تلاش کنید');
                 redirect('register');
+                return;
             }
         }
         
-        // Show registration form
+        // نمایش فرم ثبت نام
         require_once 'views/auth/register.php';
-    }
-    
-    private function isAccountLocked($username) {
-        $stmt = $this->db->prepare("SELECT COUNT(*) FROM login_attempts WHERE username = ? AND attempt_time > DATE_SUB(NOW(), INTERVAL ? SECOND)");
-        $stmt->execute([$username, LOCKOUT_TIME]);
-        return $stmt->fetchColumn() >= ALLOWED_ATTEMPTS;
-    }
-    
-    private function incrementLoginAttempts($username) {
-        $stmt = $this->db->prepare("INSERT INTO login_attempts (username, attempt_time) VALUES (?, NOW())");
-        $stmt->execute([$username]);
-    }
-    
-    private function resetLoginAttempts($username) {
-        $stmt = $this->db->prepare("DELETE FROM login_attempts WHERE username = ?");
-        $stmt->execute([$username]);
     }
 }

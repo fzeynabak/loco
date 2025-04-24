@@ -1,24 +1,25 @@
 <?php
 session_start();
 
-define('BASE_URL', 'http://your-domain.com/locomotive-error-system');
+// تنظیمات پایه
+define('BASE_URL', 'http://localhost/loco');
 define('DB_HOST', 'localhost');
-define('DB_USER', 'your_username');
-define('DB_PASS', 'your_password');
+define('DB_USER', 'root'); // نام کاربری دیتابیس خود را وارد کنید
+define('DB_PASS', ''); // رمز عبور دیتابیس خود را وارد کنید
 define('DB_NAME', 'locomotive_errors');
 
-// Error reporting
+// گزارش خطاها
 error_reporting(E_ALL);
-ini_set('display_errors', 0);
+ini_set('display_errors', 1); // برای محیط توسعه 1 و برای محیط تولید 0
 ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/../logs/error.log');
 
-// Security configurations
-define('HASH_COST', 12); // For password hashing
-define('SESSION_LIFETIME', 3600); // 1 hour
-define('CSRF_TOKEN_SECRET', 'change-this-to-a-random-string');
+// تنظیمات امنیتی
+define('HASH_COST', 12);
+define('SESSION_LIFETIME', 3600);
+define('CSRF_TOKEN_SECRET', 'your-secret-key-here');
 
-// Application settings
+// تنظیمات برنامه
 define('ITEMS_PER_PAGE', 10);
 define('ALLOWED_ATTEMPTS', 3);
-define('LOCKOUT_TIME', 900); // 15 minutes
+define('LOCKOUT_TIME', 900);

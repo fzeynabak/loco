@@ -2,11 +2,14 @@
 RewriteEngine On
 
 # Set base path
-RewriteBase /locomotive-error-system/
+RewriteBase /loco/
 
-# Handle front controller
+
+# اگر درخواست برای فایل یا دایرکتوری موجود نیست
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+
+# همه درخواست‌ها را به index.php هدایت کن
 RewriteRule ^(.*)$ index.php?route=$1 [QSA,L]
 
 # Security headers
@@ -33,9 +36,7 @@ Options -Indexes
     Deny from all
 </FilesMatch>
 
-# PHP error handling
-php_flag display_errors off
-php_value error_reporting E_ALL
+
 php_value error_log logs/error.log
 
 # Secure PHP configuration
@@ -43,3 +44,11 @@ php_value session.cookie_httponly 1
 php_value session.cookie_secure 1
 php_value session.use_only_cookies 1
 php_value session.cookie_samesite "Strict"
+
+
+
+
+
+# تنظیمات PHP
+php_value display_errors 1
+php_value error_reporting E_ALL
