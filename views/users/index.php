@@ -36,7 +36,8 @@
                         </td>
                         <td>
                             <?php 
-                            $permissions = explode(',', $user['permissions']);
+                            // اصلاح خطای Deprecated با بررسی null
+                            $permissions = !empty($user['permissions']) ? explode(',', $user['permissions']) : [];
                             foreach ($permissions as $permission): 
                                 if (empty($permission)) continue;
                             ?>
