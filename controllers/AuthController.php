@@ -19,8 +19,8 @@ class AuthController {
             $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
             $password = $_POST['password'] ?? '';
             
-            if (empty($username) || empty($password)) {
-                set_flash_message('error', 'لطفاً نام کاربری و رمز عبور را وارد کنید');
+            if (!verify_csrf_token()) {
+                set_flash_message('error', 'درخواست نامعتبر است. لطفاً دوباره تلاش کنید');
                 redirect('login');
                 return;
             }
