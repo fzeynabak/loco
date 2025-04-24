@@ -1,20 +1,25 @@
 <?php
-// لود کردن فایل‌های مورد نیاز
 require_once 'config/config.php';
-require_once 'includes/functions.php';
 require_once 'includes/database.php';
+require_once 'includes/functions.php';
 
 // مسیریابی ساده
 $route = $_GET['route'] ?? '';
 
-// اگر مسیر خالی باشد، صفحه اصلی را نمایش بده
-if (empty($route)) {
-    require_once 'views/landing.php';
+// بررسی احراز هویت برای مسیرهای محافظت شده
+$public_routes = ['', 'login', 'register', 'forgot-password'];
+if (!in_array($route, $public_routes) && !is_authenticated()) {
+    set_flash_message('error', 'لطفاً ابتدا وارد شوید');
+    redirect('login');
     exit;
 }
 
-// مسیریابی به سایر صفحات
+// مسیریابی
 switch ($route) {
+    case '':
+        require_once 'views/landing.php';
+        break;
+        
     case 'login':
         require_once 'controllers/AuthController.php';
         $controller = new AuthController();
@@ -27,8 +32,16 @@ switch ($route) {
         $controller->register();
         break;
         
+    case 'dashboard':
+        require_once 'views/dashboard.php';
+        break;
+        
+    case 'logout':
+        session_destroy();
+        redirect('login');
+        break;
+        
     default:
-        // صفحه 404
         header("HTTP/1.0 404 Not Found");
         require_once 'views/404.php';
         break;

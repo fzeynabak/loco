@@ -20,8 +20,8 @@ class AuthController {
             }
             
             try {
-                $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ? AND status = 'active' LIMIT 1");
-                $stmt->execute([$username]);
+                // خط 23 رو به این صورت تغییر بدین
+                $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ? AND status != 'blocked' LIMIT 1");                $stmt->execute([$username]);
                 $user = $stmt->fetch();
                 
                 if ($user && password_verify($password, $user['password'])) {
