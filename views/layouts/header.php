@@ -20,33 +20,23 @@
 </head>
 <body>
     <!-- نوار ناوبری -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="<?php echo BASE_URL; ?>/">
-                <img src="<?php echo BASE_URL; ?>/assets/images/logo.png" alt="لوگو" height="40">
-            </a>
-            
+            <a class="navbar-brand" href="<?php echo BASE_URL; ?>">سیستم مدیریت خطاها</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?php echo BASE_URL; ?>/">صفحه اصلی</a>
-                    </li>
                     <?php if (is_authenticated()): ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo BASE_URL; ?>/errors">جستجوی خطاها</a>
+                            <a class="nav-link" href="<?php echo BASE_URL; ?>/dashboard">داشبورد</a>
                         </li>
-                        <?php if (is_admin()): ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?php echo BASE_URL; ?>/admin">پنل مدیریت</a>
-                            </li>
-                        <?php endif; ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo BASE_URL; ?>/errors/search">جستجوی خطاها</a>
+                        </li>
                     <?php endif; ?>
                 </ul>
-                
                 <div class="d-flex">
                     <?php if (is_authenticated()): ?>
                         <div class="dropdown">
@@ -55,6 +45,9 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>/profile">پروفایل</a></li>
+                                <?php if (is_admin()): ?>
+                                    <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>/admin/dashboard">پنل مدیریت</a></li>
+                                <?php endif; ?>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>/logout">خروج</a></li>
                             </ul>
@@ -67,3 +60,5 @@
             </div>
         </div>
     </nav>
+    <!-- نمایش پیام‌های فلش -->
+    <?php show_flash_messages(); ?>
