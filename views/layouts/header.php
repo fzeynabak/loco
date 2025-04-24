@@ -79,8 +79,7 @@ if (session_status() === PHP_SESSION_NONE) {
     </nav>
     
     <?php if (function_exists('show_flash_message')) show_flash_message(); ?>
-
-    <!-- اسکریپت تایید خروج -->
+       <!-- اسکریپت تایید خروج -->
     <script>
     function confirmLogout() {
         Swal.fire({
@@ -100,7 +99,5 @@ if (session_status() === PHP_SESSION_NONE) {
     }
     </script>
 
-    <!-- Bootstrap JS -->
+    <!-- اسکریپت Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>

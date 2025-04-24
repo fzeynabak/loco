@@ -36,5 +36,27 @@
     
     <!-- اسکریپت سفارشی -->
     <script src="<?php echo BASE_URL; ?>/assets/js/main.js"></script>
+    <!-- اسکریپت تایید خروج -->
+    <script>
+    function confirmLogout() {
+        Swal.fire({
+            title: 'آیا مطمئن هستید؟',
+            text: "آیا می‌خواهید از سیستم خارج شوید؟",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'بله، خارج شوم',
+            cancelButtonText: 'انصراف'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '<?php echo BASE_URL; ?>/logout';
+            }
+        });
+    }
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

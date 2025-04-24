@@ -1,7 +1,7 @@
 /* فونت ایران‌سنس */
 @font-face {
     font-family: IRANSans;
-    src: url('../fonts/IRANSans.ttf') format('truetype');
+    src: url('/fonts/IRANSans.ttf') format('truetype');
 }
 
 /* تنظیمات کلی */
