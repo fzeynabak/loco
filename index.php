@@ -106,4 +106,26 @@ case 'users/permissions':
     default:
         require_once 'views/404.php';
         break;
+
+    case 'errors/edit':
+    if (!is_admin() && !has_permission('edit_error')) {
+        set_flash_message('error', 'شما دسترسی لازم را ندارید');
+        redirect('errors');
+        break;
+    }
+    require_once 'controllers/ErrorController.php';
+    $controller = new ErrorController();
+    $controller->edit($parts[2] ?? null);
+    break;
+
+case 'errors/delete':
+    if (!is_admin()) {
+        set_flash_message('error', 'فقط مدیر سیستم می‌تواند خطاها را حذف کند');
+        redirect('errors');
+        break;
+    }
+    require_once 'controllers/ErrorController.php';
+    $controller = new ErrorController();
+    $controller->delete($parts[2] ?? null);
+    break;
 }
