@@ -111,3 +111,20 @@ function verify_csrf_token() {
     }
     return true;
 }
+function check_permission($permission_name) {
+    if (is_admin()) return true;
+    
+    try {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare(
+            "SELECT COUNT(*) FROM user_permissions up 
+             JOIN permissions p ON up.permission_id = p.id 
+             WHERE up.user_id = ? AND p.permission_name = ?"
+        );
+        $stmt->execute([$_SESSION['user_id'], $permission_name]);
+        return $stmt->fetchColumn() > 0;
+    } catch (PDOException $e) {
+        error_log("Error checking permission: " . $e->getMessage());
+        return false;
+    }
+}

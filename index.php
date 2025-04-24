@@ -32,7 +32,27 @@ switch ($route) {
     case 'dashboard':
         require_once 'views/dashboard.php';
         break;
-        
+        case 'users':
+    if (!is_admin()) {
+        set_flash_message('error', 'شما دسترسی لازم را ندارید');
+        redirect('dashboard');
+        break;
+    }
+    require_once 'controllers/UserController.php';
+    $controller = new UserController();
+    $controller->index();
+    break;
+
+case 'users/permissions':
+    if (!is_admin()) {
+        set_flash_message('error', 'شما دسترسی لازم را ندارید');
+        redirect('dashboard');
+        break;
+    }
+    require_once 'controllers/UserController.php';
+    $controller = new UserController();
+    $controller->updatePermissions();
+    break;
     case 'login':
         require_once 'controllers/AuthController.php';
         $controller = new AuthController();
@@ -46,6 +66,9 @@ switch ($route) {
         break;
         
     case 'logout':
+        require_once 'controllers/AuthController.php';
+        $controller = new AuthController();
+        $controller->logout();
         // حذف تمام داده‌های session
         $_SESSION = array();
         

@@ -8,7 +8,7 @@
                     <h3 class="mb-0">ثبت نام در سیستم</h3>
                 </div>
                 <div class="card-body p-4">
-                    <?php show_flash_messages(); ?>
+                    <?php show_flash_message(); ?>
                     
                     <form action="<?php echo BASE_URL; ?>/register" method="POST" class="needs-validation" novalidate>
                         <?php insert_csrf_token(); ?>

@@ -152,4 +152,63 @@ class AuthController {
             error_log("Error logging action: " . $e->getMessage());
         }
     }
+    public function register() {
+    // اگر کاربر قبلاً لاگین کرده است، به داشبورد هدایت شود
+    if (isset($_SESSION['user_id'])) {
+        redirect('dashboard');
+        return;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+        $password = $_POST['password'] ?? '';
+        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+        
+        if (!verify_csrf_token()) {
+            set_flash_message('error', 'درخواست نامعتبر است. لطفاً دوباره تلاش کنید');
+            redirect('register');
+            return;
+        }
+
+        try {
+            // بررسی تکراری نبودن نام کاربری و ایمیل
+            $stmt = $this->db->prepare("SELECT COUNT(*) FROM users WHERE username = ? OR email = ?");
+            $stmt->execute([$username, $email]);
+            if ($stmt->fetchColumn() > 0) {
+                set_flash_message('error', 'این نام کاربری یا ایمیل قبلاً ثبت شده است');
+                redirect('register');
+                return;
+            }
+
+            // هش کردن رمز عبور
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+            // ثبت کاربر جدید
+            $stmt = $this->db->prepare(
+                "INSERT INTO users (username, password, name, email, role, status, created_at) 
+                 VALUES (?, ?, ?, ?, 'user', 'active', NOW())"
+            );
+            $stmt->execute([$username, $hashed_password, $name, $email]);
+            
+            $user_id = $this->db->lastInsertId();
+
+            // ثبت لاگ
+            $this->logAction($user_id, 'register', 'success');
+
+            set_flash_message('success', 'ثبت‌نام با موفقیت انجام شد. اکنون می‌توانید وارد شوید');
+            redirect('login');
+            return;
+
+        } catch (PDOException $e) {
+            error_log("Registration error: " . $e->getMessage());
+            set_flash_message('error', 'خطایی در سیستم رخ داده است. لطفاً بعداً تلاش کنید');
+            redirect('register');
+            return;
+        }
+    }
+
+    // نمایش فرم ثبت‌نام
+    require_once 'views/auth/register.php';
+}
 }
