@@ -20,6 +20,15 @@ $db = Database::getInstance()->getConnection();
 // مسیریابی
 switch ($route) {
     case '':
+        // اگر کاربر لاگین نکرده به صفحه لاگین هدایت شود
+        if (!is_authenticated()) {
+            redirect('login');
+            break;
+        }
+        // در غیر این صورت به داشبورد برود
+        require_once 'views/dashboard.php';
+        break;
+        
     case 'dashboard':
         require_once 'views/dashboard.php';
         break;
@@ -74,5 +83,4 @@ switch ($route) {
     default:
         require_once 'views/404.php';
         break;
-
 }

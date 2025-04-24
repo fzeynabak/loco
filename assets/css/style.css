@@ -8,6 +8,7 @@
 body {
     font-family: IRANSans, sans-serif;
     line-height: 1.6;
+    background-color: #f5f7fb;
 }
 
 .rtl {
@@ -15,66 +16,235 @@ body {
     text-align: right;
 }
 
-/* بخش هدر */
-.hero-section {
-    padding: 100px 0;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-}
-
-.min-vh-75 {
-    min-height: 75vh;
-}
-
-/* بخش ویژگی‌ها */
-.features-section .card {
-    transition: transform 0.3s ease;
-    border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.features-section .card:hover {
-    transform: translateY(-5px);
-}
-
-/* بخش راهنما */
-.guide-section {
-    background-color: #f8f9fa;
-}
-
-.step-number {
-    width: 40px;
-    height: 40px;
+/* استایل‌های صفحه ورود */
+.auth-container {
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
+    padding: 2rem;
+    background-color: #f5f7fb;
 }
 
-/* دکمه‌ها */
-.btn {
-    border-radius: 50px;
-    padding: 12px 30px;
-    font-weight: 500;
+.auth-card {
+    width: 100%;
+    max-width: 1200px;
+    background: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-.btn-primary {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
+.auth-row {
+    display: flex;
+    min-height: 600px;
 }
 
-.btn-primary:hover {
-    background-color: #0b5ed7;
-    border-color: #0b5ed7;
-}
-
-/* کارت‌ها */
-.card {
-    border-radius: 15px;
+.auth-left {
+    flex: 1;
+    background: linear-gradient(135deg, #0143a3, #0053d1);
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
     overflow: hidden;
 }
 
+.auth-left::before {
+    content: '';
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    background: url('../images/train-pattern.svg') repeat;
+    opacity: 0.1;
+    animation: slide 20s linear infinite;
+}
+
+.auth-left-content {
+    position: relative;
+    z-index: 1;
+    color: #ffffff;
+}
+
+.auth-left h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+.auth-left p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.8;
+}
+
+.auth-right {
+    flex: 1;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth-form-container {
+    max-width: 400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.auth-header h3 {
+    font-size: 1.75rem;
+    color: #2c3345;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.auth-header p {
+    color: #6c757d;
+}
+
+.form-floating {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.form-control {
+    height: 56px;
+    padding: 1rem 1rem 1rem 3rem;
+    font-size: 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #0053d1;
+    box-shadow: 0 0 0 0.25rem rgba(0, 83, 209, 0.1);
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    z-index: 2;
+}
+
+.form-check {
+    padding-right: 1.8rem;
+    padding-left: 0;
+}
+
+.form-check-input {
+    float: right;
+    margin-right: -1.8rem;
+}
+
+.auth-links {
+    margin: 1.5rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.auth-links a {
+    color: #0053d1;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.auth-links a:hover {
+    color: #0143a3;
+}
+
+.btn-auth {
+    width: 100%;
+    height: 56px;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #0143a3, #0053d1);
+    border: none;
+    color: #ffffff;
+    font-weight: 600;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-auth:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 83, 209, 0.2);
+}
+
+.social-auth {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.social-auth p {
+    color: #6c757d;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.social-auth p::before,
+.social-auth p::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background-color: #e9ecef;
+}
+
+.social-auth p::before {
+    right: 0;
+}
+
+.social-auth p::after {
+    left: 0;
+}
+
+.social-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn-social {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e9ecef;
+    background: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.btn-social:hover {
+    border-color: #0053d1;
+    transform: translateY(-2px);
+}
+
 /* انیمیشن‌ها */
-@keyframes fadeIn {
+@keyframes slide {
+    from {
+        transform: translateX(0) translateY(0);
+    }
+    to {
+        transform: translateX(-50%) translateY(-50%);
+    }
+}
+
+@keyframes fadeInUp {
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -85,28 +255,57 @@ body {
     }
 }
 
-.hero-section .row > div {
-    animation: fadeIn 1s ease-out;
+.auth-form-container > * {
+    animation: fadeInUp 0.6s ease-out forwards;
 }
 
-/* تنظیمات واکنش‌گرا */
-@media (max-width: 768px) {
-    .hero-section {
-        padding: 50px 0;
+.auth-form-container > *:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.auth-form-container > *:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+/* واکنش‌گرایی */
+@media (max-width: 992px) {
+    .auth-row {
+        flex-direction: column;
     }
     
-    .display-4 {
-        font-size: 2.5rem;
+    .auth-left {
+        padding: 2rem;
+        text-align: center;
+        min-height: 300px;
     }
     
-    .step {
-        margin-bottom: 2rem;
+    .auth-right {
+        padding: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .auth-container {
+        padding: 1rem;
+    }
+    
+    .auth-card {
+        border-radius: 12px;
+    }
+    
+    .auth-left,
+    .auth-right {
+        padding: 1.5rem;
+    }
+    
+    .auth-left h2 {
+        font-size: 2rem;
     }
 }
 
 /* تنظیمات دسترسی‌پذیری */
 :focus {
-    outline: 3px solid rgba(13, 110, 253, 0.25);
+    outline: 3px solid rgba(0, 83, 209, 0.25);
     outline-offset: 2px;
 }
 
