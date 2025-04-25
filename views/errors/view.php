@@ -2,9 +2,9 @@
 
 <!-- تصویر سراسری در بالای صفحه -->
 <div class="error-header position-relative" style="height: 250px; overflow: hidden;">
-    <img src="<?php echo BASE_URL; ?>/assets/img/locomotive-banner.jpg" 
+    <img src="<?php echo BASE_URL; ?>/assets/images/locomotive-banner.jpg" 
          class="w-100 h-100" 
-         style="object-fit: cover; filter: brightness(0.7);"
+         style="object-fit: cover; filter: brightness(0.4);"
          alt="تصویر سراسری لوکوموتیو">
     <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
         <div class="text-center text-white">
