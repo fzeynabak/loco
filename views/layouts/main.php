@@ -29,138 +29,125 @@ if (session_status() === PHP_SESSION_NONE) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
     <style>
-    /* Reset */
-    *, *::before, *::after {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    
-    html {
-        height: 100%;
-    }
-    
-    body {
-        font-family: "Vazirmatn", system-ui, -apple-system, "Segoe UI", sans-serif;
-        background: #f8f9fa;
-        min-height: 100%;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    /* Layout */
-    .wrapper {
-        display: flex;
-        min-height: 100vh;
-        width: 100%;
-    }
-    
-    /* Sidebar */
+/* Reset */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: "Vazirmatn", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: #f8f9fa;
+    display: block; /* تغییر از flex به block */
+    position: relative;
+}
+
+/* Layout */
+.wrapper {
+    min-height: 100%;
+    display: flex;
+    position: relative;
+}
+
+/* Sidebar */
+.sidebar-wrapper {
+    width: 280px;
+    background: #fff;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    overflow-y: auto;
+    z-index: 1040;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 1.5rem;
+    margin-right: 280px;
+    min-height: 100%;
+    background: #f8f9fa;
+    position: relative;
+    z-index: 1;
+}
+
+/* Cards & Tables [بدون تغییر] */
+.card {
+    border: none;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.table-responsive {
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 1199.98px) {
     .sidebar-wrapper {
-        width: 280px;
-        background: #fff;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 1030;
-        overflow-y: auto;
+        width: 240px;
+    }
+    .main-content {
+        margin-right: 240px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .sidebar-wrapper {
+        transform: translateX(100%);
         transition: transform 0.3s ease-in-out;
     }
     
-    /* Main Content */
+    .sidebar-wrapper.show {
+        transform: translateX(0);
+    }
+    
     .main-content {
-        flex: 1;
-        width: calc(100% - 280px);
-        margin-right: 280px;
-        min-height: 100vh;
-        padding: 1.5rem;
-        transition: margin-right 0.3s ease-in-out;
-        background: #f8f9fa;
+        margin-right: 0;
+        width: 100%;
     }
     
-    /* Cards & Tables */
-    .card {
-        border: none;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-        margin-bottom: 1.5rem;
-    }
-    
-    .table-responsive {
-        margin-bottom: 1.5rem;
-    }
-    
-    /* Mobile Toggle Button */
-    .sidebar-toggle {
+    .overlay {
         position: fixed;
-        top: 1rem;
-        right: 1rem;
-        z-index: 1040;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1030;
         display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
     }
     
-    /* Responsive Breakpoints */
-    @media (max-width: 1199.98px) {
-        .main-content {
-            width: calc(100% - 240px);
-            margin-right: 240px;
-        }
-        .sidebar-wrapper {
-            width: 240px;
-        }
+    .overlay.show {
+        display: block;
+        opacity: 1;
     }
-    
-    @media (max-width: 991.98px) {
-        .sidebar-wrapper {
-            transform: translateX(100%);
-        }
-        
-        .sidebar-wrapper.show {
-            transform: translateX(0);
-        }
-        
-        .main-content {
-            width: 100%;
-            margin-right: 0;
-        }
-        
-        .sidebar-toggle {
-            display: block;
-        }
-        
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1029;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-        }
-        
-        .overlay.show {
-            display: block;
-            opacity: 1;
-        }
+}
+
+@media (max-width: 767.98px) {
+    .main-content {
+        padding: 1rem;
     }
-    
-    @media (max-width: 767.98px) {
-        .main-content {
-            padding: 1rem;
-        }
+}
+
+@media (max-width: 575.98px) {
+    .main-content {
+        padding: 0.75rem;
     }
-    
-    @media (max-width: 575.98px) {
-        .main-content {
-            padding: 0.75rem;
-        }
-    }
-    </style>
+}
+</style>
 </head>
 <body>
 
