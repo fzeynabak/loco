@@ -52,21 +52,32 @@
             </a>
         </li>
         <?php endif; ?>
-        
+
         <?php if (is_admin()): ?>
+        <!-- دسته‌بندی‌ها -->
+        <li class="nav-item mb-1">
+            <a href="<?php echo BASE_URL; ?>/admin/categories" 
+               class="nav-link <?php echo $route === 'admin/categories' ? 'active' : 'link-dark'; ?>">
+                <i class="bi bi-folder me-2"></i>
+                <span>دسته‌بندی‌ها</span>
+            </a>
+        </li>
+
+        <!-- لوکوموتیوها -->
+        <li class="nav-item mb-1">
+            <a href="<?php echo BASE_URL; ?>/admin/locomotives" 
+               class="nav-link <?php echo $route === 'admin/locomotives' ? 'active' : 'link-dark'; ?>">
+                <i class="bi bi-train-front me-2"></i>
+                <span>لوکوموتیوها</span>
+            </a>
+        </li>
+        
+        <!-- مدیریت کاربران -->
         <li class="nav-item mb-1">
             <a href="<?php echo BASE_URL; ?>/users" 
                class="nav-link <?php echo $route === 'users' ? 'active' : 'link-dark'; ?>">
                 <i class="bi bi-people me-2"></i>
                 <span>مدیریت کاربران</span>
-            </a>
-        </li>
-        
-        <li class="nav-item mb-1">
-            <a href="<?php echo BASE_URL; ?>/users/permissions" 
-                class="nav-link <?php echo $route === 'users/permissions' ? 'active' : 'link-dark'; ?>">
-                <i class="bi bi-shield-check me-2"></i>
-                <span>مدیریت دسترسی‌ها</span>
             </a>
         </li>
         <?php endif; ?>
