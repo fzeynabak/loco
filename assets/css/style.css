@@ -521,3 +521,31 @@ html {
 .profile-card:nth-child(3) {
     animation-delay: 0.4s;
 }
+/* Sidebar Styles */
+.sidebar {
+    z-index: 1000;
+    padding: 20px;
+}
+
+/* Hover Effects */
+.hover-overlay {
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.hover-overlay:hover {
+    opacity: 1 !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100% !important;
+        position: relative !important;
+    }
+    
+    .flex-grow-1 {
+        margin-right: 0 !important;
+    }
+}
