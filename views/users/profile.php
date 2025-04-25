@@ -148,13 +148,12 @@
 
 <script>
 $(document).ready(function() {
-    // لود کردن لیست استان‌ها و شهرها
-    $.getJSON('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/iran.json', function(data) {
+    // لود کردن لیست استان‌ها
+    $.getJSON('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/ostan.json', function(data) {
         // پر کردن لیست استان‌ها
-        let provinces = Object.keys(data);
         let provinceSelect = $('#province');
-        provinces.forEach(function(province) {
-            provinceSelect.append(new Option(province, province));
+        data.forEach(function(province) {
+            provinceSelect.append(new Option(province.name, province.id));
         });
         
         // تنظیم استان فعلی
@@ -194,14 +193,15 @@ $(document).ready(function() {
     });
 });
 
-function updateCities(province, selectedCity = '') {
-    $.getJSON('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/iran.json', function(data) {
+function updateCities(provinceId, selectedCity = '') {
+    $.getJSON('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/shahr.json', function(data) {
         let citySelect = $('#city');
         citySelect.empty().append('<option value="">انتخاب کنید</option>');
         
-        if (province && data[province]) {
-            data[province].forEach(function(city) {
-                citySelect.append(new Option(city, city));
+        if (provinceId) {
+            let cities = data.filter(city => city.ostan === parseInt(provinceId));
+            cities.forEach(function(city) {
+                citySelect.append(new Option(city.name, city.id));
             });
             
             if (selectedCity) {
