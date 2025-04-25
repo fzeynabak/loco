@@ -108,6 +108,7 @@
     .fade {
         transition: opacity 0.15s linear;
     }
+    
     </style>
 </head>
 <body>
@@ -123,20 +124,17 @@
         <?php endif; ?>
         
         <!-- محتوای اصلی -->
-        <div class="content-wrapper">
-            <div class="container-fluid">
-                <?php if (isset($_SESSION['flash_message'])): ?>
-                    <div class="alert alert-<?php echo $_SESSION['flash_type']; ?> alert-dismissible fade show mb-4" role="alert">
-                        <?php echo $_SESSION['flash_message']; ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <?php unset($_SESSION['flash_message'], $_SESSION['flash_type']); ?>
-                <?php endif; ?>
-                
-                <?php echo $content ?? ''; ?>
-            </div>
+<div class="content-wrapper">
+    <?php if (isset($_SESSION['flash_message'])): ?>
+        <div class="alert alert-<?php echo $_SESSION['flash_type']; ?> alert-dismissible fade show mb-4" role="alert">
+            <?php echo $_SESSION['flash_message']; ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    </div>
+        <?php unset($_SESSION['flash_message'], $_SESSION['flash_type']); ?>
+    <?php endif; ?>
+    
+    <?php echo $content ?? ''; ?>
+</div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>

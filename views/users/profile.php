@@ -3,15 +3,19 @@
 <div class="container-fluid py-4">
     <div class="row">
         <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <img src="https://www.gravatar.com/avatar/<?php echo md5($user['email']); ?>?s=150&d=mp" 
-                         class="rounded-circle mb-3" alt="تصویر پروفایل">
-                    <h5 class="card-title mb-1"><?php echo htmlspecialchars($user['name']); ?></h5>
-                    <p class="text-muted"><?php echo htmlspecialchars($user['role'] === 'admin' ? 'مدیر سیستم' : 'کاربر'); ?></p>
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <img src="https://www.gravatar.com/avatar/<?php echo md5($user['email']); ?>?s=150&d=mp" 
+                             class="rounded-circle mb-3" alt="تصویر پروفایل">
+                        <h5 class="card-title mb-1"><?php echo htmlspecialchars($user['name']); ?></h5>
+                        <p class="text-muted"><?php echo htmlspecialchars($user['role'] === 'admin' ? 'مدیر سیستم' : 'کاربر'); ?></p>
+                    </div>
                 </div>
             </div>
-        </div>
         
         <div class="col-md-8">
             <div class="card">
