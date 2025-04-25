@@ -100,46 +100,44 @@ case 'users/permissions':
         
     // مسیرهای مربوط به خطاها
     case 'errors':
-    case (preg_match('/^errors\//', $route) ? true : false):
         require_once 'controllers/ErrorController.php';
         $controller = new ErrorController();
-        
-        if ($route === 'errors') {
-            $controller->index();
-        } elseif ($route === 'errors/create') {
-            $controller->create();
-        } elseif (preg_match('/^errors\/view\/(\d+)$/', $route, $matches)) {
-            $controller->view($matches[1]);
-        } else {
-            require_once 'views/404.php';
+        $controller->index();
+        break;
+
+    case 'errors/create':
+        require_once 'controllers/ErrorController.php';
+        $controller = new ErrorController();
+        $controller->create();
+        break;
+
+    case (preg_match('/^errors\/edit\/(\d+)$/', $route, $matches) ? true : false):
+        if (!is_admin() && !has_permission('edit_error')) {
+            set_flash_message('error', 'شما دسترسی لازم را ندارید');
+            redirect('errors');
+            break;
         }
-        break;
-        
-    default:
-        require_once 'views/404.php';
+        require_once 'controllers/ErrorController.php';
+        $controller = new ErrorController();
+        $controller->edit($matches[1]);
         break;
 
-    case 'errors/edit':
-    if (!is_admin() && !has_permission('edit_error')) {
-        set_flash_message('error', 'شما دسترسی لازم را ندارید');
-        redirect('errors');
+    case (preg_match('/^errors\/view\/(\d+)$/', $route, $matches) ? true : false):
+        require_once 'controllers/ErrorController.php';
+        $controller = new ErrorController();
+        $controller->view($matches[1]);
         break;
-    }
-    require_once 'controllers/ErrorController.php';
-    $controller = new ErrorController();
-    $controller->edit($parts[2] ?? null);
-    break;
 
-case 'errors/delete':
-    if (!is_admin()) {
-        set_flash_message('error', 'فقط مدیر سیستم می‌تواند خطاها را حذف کند');
-        redirect('errors');
+    case 'errors/delete':
+        if (!is_admin()) {
+            set_flash_message('error', 'فقط مدیر سیستم می‌تواند خطاها را حذف کند');
+            redirect('errors');
+            break;
+        }
+        require_once 'controllers/ErrorController.php';
+        $controller = new ErrorController();
+        $controller->delete($parts[2] ?? null);
         break;
-    }
-    require_once 'controllers/ErrorController.php';
-    $controller = new ErrorController();
-    $controller->delete($parts[2] ?? null);
-    break;
 
 case 'api/provinces':
     require_once 'controllers/ApiController.php';

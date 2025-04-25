@@ -196,7 +196,7 @@
                             <div class="row">
                                 <div class="col-md-12 mb-4">
                                     <h6 class="text-muted mb-3">راه‌حل</h6>
-                                    <p><?php echo nl2br(htmlspecialchars($error['solution'])); ?></p>
+                                    <p><?php echo nl2br(htmlspecialchars($error['solution'] ?? 'اطلاعاتی ثبت نشده است.')); ?></p>
                                 </div>
                                 <div class="col-md-6">
                                     <h6 class="text-muted mb-3">مراحل تعمیر</h6>
