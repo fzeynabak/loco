@@ -292,4 +292,122 @@ class ErrorController {
 
     require_once 'views/errors/edit.php';
 }
+public function showBreakdownForm()
+{
+    // دریافت لیست استان‌ها
+    $provinces = $this->db->query("SELECT * FROM provinces ORDER BY name")->fetchAll();
+    
+    // دریافت انواع لوکوموتیو
+    $locomotive_types = $this->db->query("SELECT * FROM locomotive_types ORDER BY name")->fetchAll();
+    
+    require_once 'views/errors/breakdown.php';
+}
+
+/**
+ * ذخیره گزارش خرابی
+ */
+public function storeBreakdown()
+{
+    // اعتبارسنجی توکن CSRF
+    if (!verify_csrf_token()) {
+        set_flash_message('error', 'توکن CSRF نامعتبر است');
+        redirect('errors/breakdown');
+        return;
+    }
+
+    try {
+        $this->db->beginTransaction();
+
+        // اعتبارسنجی فیلدهای اجباری
+        $required_fields = ['province_id', 'city_id', 'station_id', 'occurrence_date', 
+                          'locomotive_type_id', 'serial_number', 'breakdown_symptoms', 'actions_taken'];
+        
+        foreach ($required_fields as $field) {
+            if (empty($_POST[$field])) {
+                throw new Exception('لطفاً همه فیلدهای الزامی را پر کنید.');
+            }
+        }
+
+        // درج اطلاعات خرابی
+        $sql = "INSERT INTO breakdowns (
+            province_id, city_id, station_id, occurrence_date, locomotive_type_id,
+            serial_number, current_mileage, breakdown_symptoms, actions_taken,
+            final_result, reported_by, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            $_POST['province_id'],
+            $_POST['city_id'],
+            $_POST['station_id'],
+            $_POST['occurrence_date'],
+            $_POST['locomotive_type_id'],
+            $_POST['serial_number'],
+            $_POST['current_mileage'] ?: null,
+            $_POST['breakdown_symptoms'],
+            $_POST['actions_taken'],
+            $_POST['final_result'] ?: null,
+            $_SESSION['user_id']
+        ]);
+
+        $breakdown_id = $this->db->lastInsertId();
+
+        // ثبت لاگ
+        $this->logAction('create', 'breakdown', $breakdown_id, null, [
+            'locomotive_type_id' => $_POST['locomotive_type_id'],
+            'serial_number' => $_POST['serial_number'],
+            'breakdown_symptoms' => $_POST['breakdown_symptoms']
+        ]);
+
+        // آپلود تصاویر
+        if (!empty($_FILES['images']['name'][0])) {
+            $upload_dir = 'uploads/breakdowns/' . $breakdown_id . '/images/';
+            if (!file_exists($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+
+            foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
+                if ($_FILES['images']['error'][$key] === 0) {
+                    $filename = uniqid() . '_' . $_FILES['images']['name'][$key];
+                    move_uploaded_file($tmp_name, $upload_dir . $filename);
+
+                    // ذخیره اطلاعات تصویر در دیتابیس
+                    $sql = "INSERT INTO breakdown_images (breakdown_id, filename, created_at) VALUES (?, ?, NOW())";
+                    $stmt = $this->db->prepare($sql);
+                    $stmt->execute([$breakdown_id, $filename]);
+                }
+            }
+        }
+
+        // آپلود ویدیوها
+        if (!empty($_FILES['videos']['name'][0])) {
+            $upload_dir = 'uploads/breakdowns/' . $breakdown_id . '/videos/';
+            if (!file_exists($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+
+            foreach ($_FILES['videos']['tmp_name'] as $key => $tmp_name) {
+                if ($_FILES['videos']['error'][$key] === 0) {
+                    $filename = uniqid() . '_' . $_FILES['videos']['name'][$key];
+                    move_uploaded_file($tmp_name, $upload_dir . $filename);
+
+                    // ذخیره اطلاعات ویدیو در دیتابیس
+                    $sql = "INSERT INTO breakdown_videos (breakdown_id, filename, created_at) VALUES (?, ?, NOW())";
+                    $stmt = $this->db->prepare($sql);
+                    $stmt->execute([$breakdown_id, $filename]);
+                }
+            }
+        }
+
+        $this->db->commit();
+        set_flash_message('success', 'گزارش خرابی با موفقیت ثبت شد');
+        redirect('errors');
+
+    } catch (Exception $e) {
+        $this->db->rollBack();
+        error_log("Error creating breakdown report: " . $e->getMessage());
+        set_flash_message('error', $e->getMessage());
+        redirect('errors/breakdown');
+    }
+}
 }

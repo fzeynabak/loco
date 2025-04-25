@@ -52,7 +52,7 @@ case 'permissions':
     $controller = new UserController();
     $controller->permissions();
     break;
-    
+
 case 'users/permissions':
     if (!is_admin()) {
         set_flash_message('error', 'شما دسترسی لازم را ندارید');
@@ -215,5 +215,15 @@ case 'admin/locomotives':
     $controller->update();
     break;
 
-
+case 'errors/breakdown':
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        require_once 'controllers/ErrorController.php';
+        $controller = new ErrorController();
+        $controller->storeBreakdown();
+        break;
+    }
+    require_once 'controllers/ErrorController.php';
+    $controller = new ErrorController();
+    $controller->showBreakdownForm();
+    break;
 }
