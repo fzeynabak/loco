@@ -26,43 +26,93 @@
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/style.css">
     
     <style>
-    .content-wrapper {
-        margin-right: 280px;
-        transition: margin-right .3s ease-in-out;
+    body {
+        overflow-x: hidden;
     }
     
-    @media (max-width: 768px) {
-        .content-wrapper {
-            margin-right: 0;
-        }
-        .sidebar {
-            transform: translateX(280px);
-        }
-        .sidebar.show {
-            transform: translateX(0);
-        }
+    .wrapper {
+        display: flex;
+        width: 100%;
+        align-items: stretch;
+    }
+    
+    .content-wrapper {
+        width: 100%;
+        min-height: 100vh;
+        transition: all 0.3s;
+        padding: 20px;
+        margin-right: 280px;
     }
     
     .sidebar {
+        min-width: 280px;
+        max-width: 280px;
+        min-height: 100vh;
         position: fixed;
         top: 0;
         right: 0;
-        bottom: 0;
-        z-index: 100;
-        transition: transform .3s ease-in-out;
+        z-index: 999;
+        background: #fff;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+    }
+    
+    .sidebar.collapsed {
+        margin-right: -280px;
+    }
+    
+    .sidebar-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: none;
+    }
+    
+    @media (max-width: 768px) {
+        .sidebar {
+            margin-right: -280px;
+        }
+        
+        .sidebar.active {
+            margin-right: 0;
+        }
+        
+        .content-wrapper {
+            margin-right: 0;
+        }
+        
+        .sidebar-toggle {
+            display: block;
+        }
     }
     </style>
 </head>
 <body>
-    <?php 
-    if (is_authenticated()) {
-        require_once 'views/layouts/sidebar.php';
-    }
-    ?>
-    
-    <div class="content-wrapper">
-        <div class="container-fluid p-4">
-            <?php echo $content ?? ''; ?>
+    <div class="wrapper">
+        <?php if (is_authenticated()): ?>
+            <!-- دکمه منو در حالت موبایل -->
+            <button type="button" id="sidebarCollapse" class="btn btn-primary sidebar-toggle">
+                <i class="bi bi-list"></i>
+            </button>
+            
+            <!-- سایدبار -->
+            <?php require_once 'views/layouts/sidebar.php'; ?>
+        <?php endif; ?>
+        
+        <!-- محتوای اصلی -->
+        <div class="content-wrapper">
+            <div class="container-fluid">
+                <?php if (isset($_SESSION['flash_message'])): ?>
+                    <div class="alert alert-<?php echo $_SESSION['flash_type']; ?> alert-dismissible fade show mb-4" role="alert">
+                        <?php echo $_SESSION['flash_message']; ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php unset($_SESSION['flash_message'], $_SESSION['flash_type']); ?>
+                <?php endif; ?>
+                
+                <?php echo $content ?? ''; ?>
+            </div>
         </div>
     </div>
 
@@ -70,13 +120,20 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-    // Toggle sidebar on mobile
-    document.querySelector('.navbar-toggler').addEventListener('click', function() {
-        document.querySelector('.sidebar').classList.toggle('show');
-    });
-    
-    // Initialize Select2
     $(document).ready(function() {
+        // سایدبار موبایل
+        $('#sidebarCollapse').on('click', function() {
+            $('.sidebar').toggleClass('active');
+        });
+        
+        // مخفی کردن سایدبار با کلیک خارج از آن در حالت موبایل
+        $(document).click(function(e) {
+            if (!$(e.target).closest('.sidebar, #sidebarCollapse').length) {
+                $('.sidebar').removeClass('active');
+            }
+        });
+        
+        // Select2
         $('.select2').select2({
             dir: 'rtl',
             language: 'fa'

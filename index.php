@@ -158,4 +158,26 @@ case (preg_match('/^api\/stations\/(\d+)$/', $route, $matches) ? true : false):
     $controller = new ApiController();
     $controller->getStations($matches[1]);
     break;
+
+    case 'admin/categories':
+    if (!is_admin()) {
+        set_flash_message('error', 'شما دسترسی لازم را ندارید');
+        redirect('dashboard');
+        break;
+    }
+    require_once 'controllers/AdminController.php';
+    $controller = new AdminController();
+    $controller->categories();
+    break;
+
+case 'admin/locomotives':
+    if (!is_admin()) {
+        set_flash_message('error', 'شما دسترسی لازم را ندارید');
+        redirect('dashboard');
+        break;
+    }
+    require_once 'controllers/AdminController.php';
+    $controller = new AdminController();
+    $controller->locomotives();
+    break;
 }
