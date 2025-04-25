@@ -180,4 +180,20 @@ case 'admin/locomotives':
     $controller = new AdminController();
     $controller->locomotives();
     break;
+
+    case 'profile':
+    if (is_authenticated()) {
+        require_once 'controllers/ProfileController.php';
+        $controller = new ProfileController();
+        $controller->index();
+    } else {
+        redirect('login');
+    }
+    break;
+    
+    case 'profile/update':
+    require_once 'controllers/ProfileController.php';
+    $controller = new ProfileController();
+    $controller->update();
+    break;
 }
