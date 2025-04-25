@@ -28,57 +28,70 @@
 <style>
 body {
     overflow-x: hidden;
+    background: #f8f9fa;
     min-height: 100vh;
-    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
 }
 
 .wrapper {
     display: flex;
-    align-items: stretch;
-    min-height: 100vh;
+    flex: 1;
+    width: 100%;
 }
 
 .content-wrapper {
     flex: 1;
-    padding: 20px;
+    padding: 1.5rem;
     margin-right: 280px;
-    min-height: 100vh;
-    transition: margin-right 0.3s ease;
-    overflow-y: auto;
-    background-color: #f8f9fa;
+    background: #f8f9fa;
 }
 
 .sidebar {
-    position: fixed;
     width: 280px;
-    height: 100vh;
+    height: 100%;
+    position: fixed;
     top: 0;
     right: 0;
     z-index: 1030;
     background: #fff;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
     overflow-y: auto;
 }
 
-@media (max-width: 768px) {
-    .content-wrapper {
-        margin-right: 0;
-    }
-    .sidebar {
-        transform: translateX(280px);
-    }
-    .sidebar.active {
-        transform: translateX(0);
-    }
+.sidebar-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1031;
+    display: none;
 }
 
 .page-content {
     background: #fff;
     border-radius: 0.5rem;
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    padding: 1.5rem;
     margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .content-wrapper {
+        margin-right: 0;
+        width: 100%;
+    }
+    
+    .sidebar {
+        transform: translateX(280px);
+        transition: transform 0.3s ease-in-out;
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    .sidebar-toggle {
+        display: block;
+    }
 }
 </style>
 </head>

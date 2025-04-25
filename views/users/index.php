@@ -1,7 +1,7 @@
 <?php require_once 'views/layouts/main.php'; ?>
 
-<div class="container-fluid mt-3"> <!-- افزودن فاصله از بالا -->
-    <div class="card">
+<div class="container-fluid pt-3"> <!-- افزودن فاصله از بالا -->
+    <div class="card page-content">
         <div class="card-header">
             <h5 class="mb-0">مدیریت کاربران و دسترسی‌ها</h5>
         </div>
