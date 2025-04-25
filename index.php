@@ -141,7 +141,7 @@ case 'errors/delete':
     $controller->delete($parts[2] ?? null);
     break;
 
-    case 'api/provinces':
+case 'api/provinces':
     require_once 'controllers/ApiController.php';
     $controller = new ApiController();
     $controller->getProvinces();
@@ -190,7 +190,7 @@ case 'admin/locomotives':
         redirect('login');
     }
     break;
-    
+
     case 'profile/update':
     require_once 'controllers/ProfileController.php';
     $controller = new ProfileController();
