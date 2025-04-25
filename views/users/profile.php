@@ -167,23 +167,16 @@ $(document).ready(function() {
             updateCities(this.value);
         });
     });
-
+    
     // لود کردن ایستگاه‌های راه آهن
     $.getJSON('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/list-railway.json', function(data) {
         let railwayStations = data['tehran-mashhad'].stations;
         let stationSelect = $('#railway_station');
         
-        // آپدیت ایستگاه‌ها با تغییر شهر
-        $('#city').on('change', function() {
-            let selectedCity = $(this).val();
-            stationSelect.empty().append('<option value="">انتخاب کنید</option>');
-            
-            if (selectedCity) {
-                let cityStations = railwayStations.filter(station => station.city === selectedCity);
-                cityStations.forEach(station => {
-                    stationSelect.append(new Option(station.name, station.id));
-                });
-            }
+        // پر کردن لیست ایستگاه‌ها به صورت مستقل
+        stationSelect.empty().append('<option value="">انتخاب کنید</option>');
+        railwayStations.forEach(station => {
+            stationSelect.append(new Option(station.name, station.id));
         });
         
         // تنظیم ایستگاه فعلی
