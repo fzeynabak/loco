@@ -31,7 +31,7 @@
                 </div>
                 <div class="mb-0">
                     <label class="text-muted">تاریخ عضویت</label>
-                    <p class="mb-0"><?php echo jdate('Y/m/d', strtotime($user['created_at'])); ?></p>
+<p class="mb-0"><?php echo format_date($user['created_at']); ?></p>
                 </div>
             </div>
         </div>
