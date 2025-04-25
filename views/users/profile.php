@@ -147,103 +147,26 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-    // اعتبارسنجی کد ملی
-    const nationalCodeInput = $('input[name="national_code"]');
-    
-    function validateNationalCode(code) {
-        if (!/^\d{10}$/.test(code)) return false;
-        
-        const check = parseInt(code[9]);
-        let sum = 0;
-        for (let i = 0; i < 9; i++) {
-            sum += parseInt(code[i]) * (10 - i);
-        }
-        const remainder = sum % 11;
-        return (remainder < 2 && check == remainder) || (remainder >= 2 && check == (11 - remainder));
+$(document).ready(function() {
+    // تعریف تابع updateCities خارج از درخواست‌های AJAX
+    function updateCities(provinceId, selectedCity = '') {
+        $.getJSON('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/shahr.json', function(data) {
+            let citySelect = $('#city');
+            citySelect.empty().append('<option value="">انتخاب کنید</option>');
+            
+            if (provinceId) {
+                let cities = data.filter(city => city.ostan === parseInt(provinceId));
+                cities.forEach(function(city) {
+                    citySelect.append(new Option(city.name, city.id));
+                });
+                
+                if (selectedCity) {
+                    citySelect.val(selectedCity);
+                    citySelect.trigger('change');
+                }
+            }
+        });
     }
-    
-    nationalCodeInput.on('input', function() {
-        const value = $(this).val();
-        const isValid = validateNationalCode(value);
-        
-        if (value.length > 0) {
-            if (!isValid) {
-                $(this).removeClass('is-valid').addClass('is-invalid');
-                // حذف پیام خطای قبلی اگر وجود داشت
-                $(this).siblings('.invalid-feedback').remove();
-                // اضافه کردن پیام خطای جدید
-                $(this).after('<div class="invalid-feedback">کد ملی وارد شده صحیح نیست</div>');
-            } else {
-                $(this).removeClass('is-invalid').addClass('is-valid');
-                $(this).siblings('.invalid-feedback').remove();
-            }
-        } else {
-            $(this).removeClass('is-valid is-invalid');
-            $(this).siblings('.invalid-feedback').remove();
-        }
-    });
-
-    // ذخیره فرم و نمایش نوتیفیکیشن
-    $('.profile-form').on('submit', function(e) {
-        if (!this.checkValidity()) {
-            e.preventDefault();
-            e.stopPropagation();
-            $(this).addClass('was-validated');
-            return;
-        }
-
-        // جمع‌آوری مقادیر تغییر یافته
-        const formData = new FormData(this);
-        const changedFields = [];
-        const oldValues = {
-            name: '<?php echo htmlspecialchars($user['name']); ?>',
-            email: '<?php echo htmlspecialchars($user['email']); ?>',
-            mobile: '<?php echo htmlspecialchars($user['mobile'] ?? ''); ?>',
-            personnel_number: '<?php echo htmlspecialchars($user['personnel_number'] ?? ''); ?>',
-            national_code: '<?php echo htmlspecialchars($user['national_code'] ?? ''); ?>',
-            province: '<?php echo htmlspecialchars($user['province'] ?? ''); ?>',
-            city: '<?php echo htmlspecialchars($user['city'] ?? ''); ?>',
-            railway_station: '<?php echo htmlspecialchars($user['railway_station'] ?? ''); ?>',
-            address: '<?php echo htmlspecialchars($user['address'] ?? ''); ?>'
-        };
-
-        for (let [key, value] of formData.entries()) {
-            // رمز عبور را بررسی نمی‌کنیم
-            if (key.includes('password')) continue;
-            
-            // فقط فیلدهای تغییر کرده را اضافه می‌کنیم
-            if (value !== oldValues[key]) {
-                const label = $(`[name="${key}"]`).closest('.form-group').find('.form-label').text().replace(' *', '');
-                changedFields.push(`${label}: ${oldValues[key]} ➜ ${value}`);
-            }
-        }
-
-        if (changedFields.length > 0) {
-            const confirmMessage = changedFields.map(field => `<p>${field}</p>`).join('');
-
-            e.preventDefault();
-            
-            Swal.fire({
-                title: 'تایید تغییرات',
-                html: confirmMessage,
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonText: 'ذخیره تغییرات',
-                cancelButtonText: 'انصراف',
-                customClass: {
-                    popup: 'swal2-rtl',
-                    title: 'text-right'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    this.submit();
-                }
-            });
-        }
-    });
-
-
 
     // لود کردن لیست استان‌ها
     $.getJSON('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/ostan.json', function(data) {
@@ -281,39 +204,90 @@
             stationSelect.val('<?php echo $user['railway_station']; ?>');
         }
     });
-});
 
-function updateCities(provinceId, selectedCity = '') {
-    $.getJSON('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/shahr.json', function(data) {
-        let citySelect = $('#city');
-        citySelect.empty().append('<option value="">انتخاب کنید</option>');
+    // اعتبارسنجی فرم و نمایش تغییرات
+    $('.profile-form').on('submit', function(e) {
+        if (!this.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+            $(this).addClass('was-validated');
+            return;
+        }
+
+        // تهیه لیست فیلدهای قابل مقایسه
+        const fieldsToCompare = {
+            'name': 'نام و نام خانوادگی',
+            'email': 'ایمیل',
+            'mobile': 'شماره موبایل',
+            'personnel_number': 'شماره پرسنلی',
+            'national_code': 'کد ملی',
+            'province': 'استان',
+            'city': 'شهرستان',
+            'railway_station': 'ایستگاه راه آهن',
+            'address': 'آدرس'
+        };
+
+        // جمع‌آوری تغییرات
+        const changedFields = [];
         
-        if (provinceId) {
-            let cities = data.filter(city => city.ostan === parseInt(provinceId));
-            cities.forEach(function(city) {
-                citySelect.append(new Option(city.name, city.id));
-            });
-            
-            if (selectedCity) {
-                citySelect.val(selectedCity);
-                citySelect.trigger('change');
+        Object.entries(fieldsToCompare).forEach(([key, label]) => {
+            const input = $(`[name="${key}"]`);
+            if (input.length) {
+                const newValue = input.val();
+                const oldValue = '<?php echo addslashes($user[$key] ?? ""); ?>';
+                
+                // فقط اگر مقدار تغییر کرده باشد و هر دو مقدار معتبر باشند
+                if (newValue !== oldValue && (newValue || oldValue)) {
+                    // برای select‌ها، متن گزینه انتخاب شده را نمایش می‌دهیم
+                    if (input.is('select')) {
+                        const newText = input.find('option:selected').text();
+                        const oldText = input.find(`option[value="${oldValue}"]`).text() || 'تعیین نشده';
+                        changedFields.push(`${label}: ${oldText} ➜ ${newText}`);
+                    } else {
+                        changedFields.push(`${label}: ${oldValue || 'تعیین نشده'} ➜ ${newValue}`);
+                    }
+                }
             }
+        });
+
+        // اگر تغییری وجود داشته باشد
+        if (changedFields.length > 0 || $('[name="new_password"]').val()) {
+            e.preventDefault();
+            
+            let message = '<div class="text-start" style="direction: rtl">';
+            
+            if (changedFields.length > 0) {
+                message += '<h6 class="mb-3">تغییرات اطلاعات:</h6>';
+                message += changedFields.map(field => `<div class="mb-2">${field}</div>`).join('');
+            }
+            
+            if ($('[name="new_password"]').val()) {
+                message += '<div class="mt-3 text-warning">رمز عبور نیز تغییر خواهد کرد.</div>';
+            }
+            
+            message += '</div>';
+
+            Swal.fire({
+                title: 'تایید تغییرات',
+                html: message,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'ذخیره تغییرات',
+                cancelButtonText: 'انصراف',
+                customClass: {
+                    popup: 'swal2-rtl',
+                    title: 'text-right'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            });
+        } else {
+            this.submit();
         }
     });
-}
-
-// اعتبارسنجی فرم
-$('form').on('submit', function(e) {
-    if (!this.checkValidity()) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-    $(this).addClass('was-validated');
 });
-
-
-// اضافه کردن اعتبارسنجی کد ملی و نوتیفیکیشن به اسکریپت‌های موجود
-
 </script>
-<script src="<?php echo BASE_URL; ?>/assets/js/profile-validation.js"></script>
+
 <?php require_once 'views/layouts/footer.php'; ?>
