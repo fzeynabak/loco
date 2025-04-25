@@ -138,7 +138,17 @@ case 'users/permissions':
         $controller = new ErrorController();
         $controller->delete($parts[2] ?? null);
         break;
-
+    case 'errors/edit':
+    if (!is_admin() && !has_permission('edit_error')) {
+        set_flash_message('error', 'شما دسترسی لازم را ندارید');
+        redirect('errors');
+        break;
+    }
+    require_once 'controllers/ErrorController.php';
+    $controller = new ErrorController();
+    $controller->edit($parts[2] ?? null);  // اینجا متد edit رو صدا میزنه
+    break;
+    
 case 'api/provinces':
     require_once 'controllers/ApiController.php';
     $controller = new ApiController();
@@ -194,4 +204,6 @@ case 'admin/locomotives':
     $controller = new ProfileController();
     $controller->update();
     break;
+
+
 }
