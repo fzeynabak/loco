@@ -1,135 +1,114 @@
 <?php require_once 'views/layouts/header.php'; ?>
 
-<div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-md-4">
-<div class="card">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <img src="https://www.gravatar.com/avatar/<?php echo md5($user['email']); ?>?s=150&d=mp" 
-                             class="rounded-circle mb-3" alt="تصویر پروفایل">
-                        <h5 class="card-title mb-1"><?php echo htmlspecialchars($user['name']); ?></h5>
-                        <p class="text-muted"><?php echo htmlspecialchars($user['role'] === 'admin' ? 'مدیر سیستم' : 'کاربر'); ?></p>
-                    </div>
+<div class="profile-header">
+    <div class="container">
+        <div class="profile-content text-center">
+            <div class="profile-avatar-wrapper">
+                <img src="<?php echo !empty($user['avatar']) ? $user['avatar'] : 'https://www.gravatar.com/avatar/' . md5($user['email']) . '?s=150&d=mp'; ?>" 
+                     class="profile-avatar" alt="تصویر پروفایل">
+                <div class="profile-avatar-upload">
+                    <span>تغییر تصویر</span>
                 </div>
             </div>
-        
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">ویرایش اطلاعات</h5>
-                </div>
-                <div class="card-body">
-                    <form action="<?php echo BASE_URL; ?>/profile/update" method="POST" class="needs-validation" novalidate>
-                        <?php insert_csrf_token(); ?>
-                        
-                        <div class="row">
-                            <!-- اطلاعات شخصی -->
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">نام و نام خانوادگی *</label>
-                                    <input type="text" name="name" class="form-control" 
-                                           value="<?php echo htmlspecialchars($user['name']); ?>" required>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label">شماره پرسنلی *</label>
-                                    <input type="text" name="personnel_number" class="form-control" 
-                                           value="<?php echo htmlspecialchars($user['personnel_number'] ?? ''); ?>" required
-                                           pattern="[0-9]{5,10}">
-                                    <div class="form-text">شماره پرسنلی باید بین 5 تا 10 رقم باشد</div>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label">کد ملی *</label>
-                                    <input type="text" name="national_code" class="form-control" 
-                                           value="<?php echo htmlspecialchars($user['national_code'] ?? ''); ?>" required
-                                           pattern="[0-9]{10}">
-                                    <div class="form-text">کد ملی باید 10 رقم باشد</div>
-                                </div>
-                            </div>
-                            
-                            <!-- اطلاعات تماس -->
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">ایمیل *</label>
-                                    <input type="email" name="email" class="form-control" 
-                                           value="<?php echo htmlspecialchars($user['email']); ?>" required>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label">شماره موبایل *</label>
-                                    <input type="tel" name="mobile" class="form-control" 
-                                           value="<?php echo htmlspecialchars($user['mobile'] ?? ''); ?>" required
-                                           pattern="09[0-9]{9}">
-                                    <div class="form-text">شماره موبایل باید با 09 شروع شود و 11 رقم باشد</div>
-                                </div>
-                            </div>
-                            
-                            <!-- اطلاعات محل خدمت -->
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">استان *</label>
-                                    <select name="province" id="province" class="form-select" required>
-                                        <option value="">انتخاب کنید</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label">شهر *</label>
-                                    <select name="city" id="city" class="form-select" required>
-                                        <option value="">ابتدا استان را انتخاب کنید</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">ایستگاه راه آهن *</label>
-                                    <input type="text" name="station" class="form-control" 
-                                           value="<?php echo htmlspecialchars($user['station'] ?? ''); ?>" required>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <hr>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">رمز عبور فعلی (در صورت تغییر رمز)</label>
-                            <input type="password" name="current_password" class="form-control">
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">رمز عبور جدید</label>
-                                    <input type="password" name="new_password" class="form-control">
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">تکرار رمز عبور جدید</label>
-                                    <input type="password" name="confirm_password" class="form-control">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-lg"></i>
-                                ذخیره تغییرات
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <h1 class="profile-name"><?php echo htmlspecialchars($user['name']); ?></h1>
+            <p class="profile-role"><?php echo $user['role'] === 'admin' ? 'مدیر سیستم' : 'کاربر'; ?></p>
         </div>
     </div>
 </div>
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="profile-card">
+                <h5 class="profile-card-title">اطلاعات حساب کاربری</h5>
+                <div class="mb-3">
+                    <label class="text-muted">نام کاربری</label>
+                    <p class="mb-0"><?php echo htmlspecialchars($user['username']); ?></p>
+                </div>
+                <div class="mb-3">
+                    <label class="text-muted">ایمیل</label>
+                    <p class="mb-0"><?php echo htmlspecialchars($user['email']); ?></p>
+                </div>
+                <div class="mb-0">
+                    <label class="text-muted">تاریخ عضویت</label>
+                    <p class="mb-0"><?php echo jdate('Y/m/d', strtotime($user['created_at'])); ?></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <form action="<?php echo BASE_URL; ?>/profile/update" method="POST" class="needs-validation profile-form" novalidate>
+                <?php insert_csrf_token(); ?>
+                
+                <div class="profile-card">
+                    <h5 class="profile-card-title">اطلاعات شخصی</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">نام و نام خانوادگی *</label>
+                                <input type="text" name="name" class="form-control" 
+                                       value="<?php echo htmlspecialchars($user['name']); ?>" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">شماره پرسنلی *</label>
+                                <input type="text" name="personnel_number" class="form-control" 
+                                       value="<?php echo htmlspecialchars($user['personnel_number'] ?? ''); ?>" 
+                                       pattern="[0-9]{5,10}" required>
+                                <div class="form-text">شماره پرسنلی باید بین 5 تا 10 رقم باشد</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">شماره موبایل *</label>
+                                <input type="tel" name="mobile" class="form-control" 
+                                       value="<?php echo htmlspecialchars($user['mobile'] ?? ''); ?>" 
+                                       pattern="09[0-9]{9}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">کد ملی *</label>
+                                <input type="text" name="national_code" class="form-control" 
+                                       value="<?php echo htmlspecialchars($user['national_code'] ?? ''); ?>" 
+                                       pattern="[0-9]{10}" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-card">
+                    <h5 class="profile-card-title">تغییر رمز عبور</h5>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label">رمز عبور فعلی</label>
+                                <input type="password" name="current_password" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">رمز عبور جدید</label>
+                                <input type="password" name="new_password" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">تکرار رمز عبور جدید</label>
+                                <input type="password" name="confirm_password" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-end mt-4">
+                    <button type="submit" class="btn btn-update-profile">
+                        <i class="bi bi-check-lg me-2"></i>
+                        ذخیره تغییرات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="<?php echo BASE_URL; ?>/assets/js/profile.js"></script>
 
 <script>
 // لود کردن لیست استان‌ها و شهرها
@@ -179,6 +158,7 @@ $(document).ready(function() {
         $(this).addClass('was-validated');
     });
 });
+
 </script>
 
 <?php require_once 'views/layouts/footer.php'; ?>
