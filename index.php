@@ -42,7 +42,17 @@ switch ($route) {
     $controller = new UserController();
     $controller->index();
     break;
-
+case 'permissions':
+    if (!is_admin()) {
+        set_flash_message('error', 'شما دسترسی لازم را ندارید');
+        redirect('dashboard');
+        break;
+    }
+    require_once 'controllers/UserController.php';
+    $controller = new UserController();
+    $controller->permissions();
+    break;
+    
 case 'users/permissions':
     if (!is_admin()) {
         set_flash_message('error', 'شما دسترسی لازم را ندارید');
@@ -148,7 +158,7 @@ case 'users/permissions':
     $controller = new ErrorController();
     $controller->edit($parts[2] ?? null);  // اینجا متد edit رو صدا میزنه
     break;
-    
+
 case 'api/provinces':
     require_once 'controllers/ApiController.php';
     $controller = new ApiController();

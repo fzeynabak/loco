@@ -64,8 +64,8 @@
             </li>
             
             <li class="nav-item mb-1">
-                <a href="<?php echo BASE_URL; ?>/permissions" 
-                   class="nav-link <?php echo $route === 'permissions' ? 'active' : 'link-dark'; ?>">
+                <a href="<?php echo BASE_URL; ?>/users/permissions" 
+                    class="nav-link <?php echo $route === 'users/permissions' ? 'active' : 'link-dark'; ?>">
                     <i class="bi bi-shield-check me-2"></i>
                     <span>مدیریت دسترسی‌ها</span>
                 </a>
