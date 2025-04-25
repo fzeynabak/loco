@@ -108,7 +108,11 @@
                                     </select>
                                 </div>
                             </div>
-                            
+                            <div class="mb-3">
+                                <label class="form-label">علت خطا *</label>
+                                <textarea name="cause" class="form-control" rows="4" required></textarea>
+                                <div class="invalid-feedback">علت خطا الزامی است</div>
+                            </div>
                             <!-- توضیحات خطا -->
                             <div class="col-12">
                                 <div class="mb-3">

@@ -25,68 +25,62 @@
     <!-- استایل سفارشی -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/style.css">
     
-    <style>
-    body {
-        overflow-x: hidden;
-    }
-    
-    .wrapper {
-        display: flex;
-        width: 100%;
-        align-items: stretch;
-    }
-    
+<style>
+body {
+    overflow-x: hidden;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.wrapper {
+    display: flex;
+    align-items: stretch;
+    min-height: 100vh;
+}
+
+.content-wrapper {
+    flex: 1;
+    padding: 20px;
+    margin-right: 280px;
+    min-height: 100vh;
+    transition: margin-right 0.3s ease;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+}
+
+.sidebar {
+    position: fixed;
+    width: 280px;
+    height: 100vh;
+    top: 0;
+    right: 0;
+    z-index: 1030;
+    background: #fff;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
     .content-wrapper {
-        width: 100%;
-        min-height: 100vh;
-        transition: all 0.3s;
-        padding: 20px;
-        margin-right: 280px;
+        margin-right: 0;
     }
-    
     .sidebar {
-        min-width: 280px;
-        max-width: 280px;
-        min-height: 100vh;
-        position: fixed;
-        top: 0;
-        right: 0;
-        z-index: 999;
-        background: #fff;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s;
+        transform: translateX(280px);
     }
-    
-    .sidebar.collapsed {
-        margin-right: -280px;
+    .sidebar.active {
+        transform: translateX(0);
     }
-    
-    .sidebar-toggle {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 1000;
-        display: none;
-    }
-    
-    @media (max-width: 768px) {
-        .sidebar {
-            margin-right: -280px;
-        }
-        
-        .sidebar.active {
-            margin-right: 0;
-        }
-        
-        .content-wrapper {
-            margin-right: 0;
-        }
-        
-        .sidebar-toggle {
-            display: block;
-        }
-    }
-    </style>
+}
+
+.page-content {
+    background: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+</style>
 </head>
 <body>
     <div class="wrapper">
