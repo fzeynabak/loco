@@ -31,7 +31,7 @@
                 </div>
                 <div class="mb-0">
                     <label class="text-muted">تاریخ عضویت</label>
-<p class="mb-0"><?php echo format_date($user['created_at']); ?></p>
+                    <p class="mb-0"><?php echo format_date($user['created_at']); ?></p>
                 </div>
             </div>
         </div>
@@ -75,6 +75,43 @@
                 </div>
 
                 <div class="profile-card">
+                    <h5 class="profile-card-title">اطلاعات تماس و محل کار</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">ایمیل *</label>
+                                <input type="email" name="email" class="form-control" 
+                                       value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">آدرس</label>
+                                <textarea name="address" class="form-control" rows="3"><?php echo htmlspecialchars($user['address'] ?? ''); ?></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">استان *</label>
+                                <select name="province" id="province" class="form-select" required>
+                                    <option value="">انتخاب کنید</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">شهرستان *</label>
+                                <select name="city" id="city" class="form-select" required>
+                                    <option value="">ابتدا استان را انتخاب کنید</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">ایستگاه راه آهن محل خدمت *</label>
+                                <select name="railway_station" id="railway_station" class="form-select" required>
+                                    <option value="">ابتدا شهرستان را انتخاب کنید</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-card">
                     <h5 class="profile-card-title">تغییر رمز عبور</h5>
                     <div class="row">
                         <div class="col-md-12">
@@ -108,13 +145,11 @@
         </div>
     </div>
 </div>
-<script src="<?php echo BASE_URL; ?>/assets/js/profile.js"></script>
 
 <script>
-// لود کردن لیست استان‌ها و شهرها
 $(document).ready(function() {
-    // لود کردن فایل JSON استان‌ها و شهرها
-    $.getJSON('<?php echo BASE_URL; ?>/assets/js/iran-cities.json', function(data) {
+    // لود کردن لیست استان‌ها و شهرها
+    $.getJSON('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/iran.json', function(data) {
         // پر کردن لیست استان‌ها
         let provinces = Object.keys(data);
         let provinceSelect = $('#province');
@@ -132,33 +167,59 @@ $(document).ready(function() {
         provinceSelect.on('change', function() {
             updateCities(this.value);
         });
-        
-        function updateCities(province, selectedCity = '') {
-            let citySelect = $('#city');
-            citySelect.empty().append(new Option('انتخاب کنید', ''));
-            
-            if (province && data[province]) {
-                data[province].forEach(function(city) {
-                    citySelect.append(new Option(city, city));
-                });
-                
-                if (selectedCity) {
-                    citySelect.val(selectedCity);
-                }
-            }
-        }
     });
-    
-    // اعتبارسنجی فرم
-    $('form').on('submit', function(e) {
-        if (!this.checkValidity()) {
-            e.preventDefault();
-            e.stopPropagation();
+
+    // لود کردن ایستگاه‌های راه آهن
+    $.getJSON('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/list-railway.json', function(data) {
+        let railwayStations = data['tehran-mashhad'].stations;
+        let stationSelect = $('#railway_station');
+        
+        // آپدیت ایستگاه‌ها با تغییر شهر
+        $('#city').on('change', function() {
+            let selectedCity = $(this).val();
+            stationSelect.empty().append('<option value="">انتخاب کنید</option>');
+            
+            if (selectedCity) {
+                let cityStations = railwayStations.filter(station => station.city === selectedCity);
+                cityStations.forEach(station => {
+                    stationSelect.append(new Option(station.name, station.id));
+                });
+            }
+        });
+        
+        // تنظیم ایستگاه فعلی
+        if ('<?php echo $user['railway_station'] ?? ''; ?>') {
+            stationSelect.val('<?php echo $user['railway_station']; ?>');
         }
-        $(this).addClass('was-validated');
     });
 });
 
+function updateCities(province, selectedCity = '') {
+    $.getJSON('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/iran.json', function(data) {
+        let citySelect = $('#city');
+        citySelect.empty().append('<option value="">انتخاب کنید</option>');
+        
+        if (province && data[province]) {
+            data[province].forEach(function(city) {
+                citySelect.append(new Option(city, city));
+            });
+            
+            if (selectedCity) {
+                citySelect.val(selectedCity);
+                citySelect.trigger('change');
+            }
+        }
+    });
+}
+
+// اعتبارسنجی فرم
+$('form').on('submit', function(e) {
+    if (!this.checkValidity()) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    $(this).addClass('was-validated');
+});
 </script>
 
 <?php require_once 'views/layouts/footer.php'; ?>
