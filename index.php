@@ -53,6 +53,18 @@ case 'users/permissions':
     $controller = new UserController();
     $controller->updatePermissions();
     break;
+
+    case 'users/toggle-status':
+    if (!is_admin()) {
+        set_flash_message('error', 'شما دسترسی لازم را ندارید');
+        redirect('users');
+        break;
+    }
+    require_once 'controllers/UserController.php';
+    $controller = new UserController();
+    $controller->toggleStatus();
+    break;
+
     case 'login':
         require_once 'controllers/AuthController.php';
         $controller = new AuthController();
@@ -127,5 +139,23 @@ case 'errors/delete':
     require_once 'controllers/ErrorController.php';
     $controller = new ErrorController();
     $controller->delete($parts[2] ?? null);
+    break;
+
+    case 'api/provinces':
+    require_once 'controllers/ApiController.php';
+    $controller = new ApiController();
+    $controller->getProvinces();
+    break;
+
+case (preg_match('/^api\/cities\/(\d+)$/', $route, $matches) ? true : false):
+    require_once 'controllers/ApiController.php';
+    $controller = new ApiController();
+    $controller->getCities($matches[1]);
+    break;
+
+case (preg_match('/^api\/stations\/(\d+)$/', $route, $matches) ? true : false):
+    require_once 'controllers/ApiController.php';
+    $controller = new ApiController();
+    $controller->getStations($matches[1]);
     break;
 }

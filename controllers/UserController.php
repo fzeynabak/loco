@@ -80,4 +80,52 @@ class UserController {
         
         redirect('users');
     }
+        public function toggleStatus() {
+        if (!is_admin()) {
+            set_flash_message('error', 'شما دسترسی لازم را ندارید');
+            redirect('users');
+            return;
+        }
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirect('users');
+            return;
+        }
+        
+        if (!verify_csrf_token()) {
+            set_flash_message('error', 'توکن CSRF نامعتبر است');
+            redirect('users');
+            return;
+        }
+        
+        $user_id = filter_input(INPUT_POST, 'user_id', FILTER_VALIDATE_INT);
+        
+        try {
+            // بررسی وجود کاربر و عدم تغییر وضعیت مدیر
+            $stmt = $this->db->prepare("SELECT role, status FROM users WHERE id = ?");
+            $stmt->execute([$user_id]);
+            $user = $stmt->fetch();
+            
+            if (!$user) {
+                throw new Exception('کاربر مورد نظر یافت نشد');
+            }
+            
+            if ($user['role'] === 'admin') {
+                throw new Exception('امکان تغییر وضعیت مدیر سیستم وجود ندارد');
+            }
+            
+            // تغییر وضعیت
+            $new_status = $user['status'] === 'active' ? 'inactive' : 'active';
+            $stmt = $this->db->prepare("UPDATE users SET status = ? WHERE id = ?");
+            $stmt->execute([$new_status, $user_id]);
+            
+            set_flash_message('success', 'وضعیت کاربر با موفقیت تغییر کرد');
+            
+        } catch (Exception $e) {
+            error_log("Error toggling user status: " . $e->getMessage());
+            set_flash_message('error', $e->getMessage());
+        }
+        
+        redirect('users');
+    }
 }
