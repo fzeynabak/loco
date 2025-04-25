@@ -1,0 +1,14 @@
+@font-face {
+    font-family: 'Pinar VF';
+    src: url('Pinar-VF.eot');
+    src: local('Pinar VF'), local('Pinar-VF'),
+        url('Pinar-VF.eot?#iefix') format('embedded-opentype'),
+        url('Pinar-VF.woff2') format('woff2'),
+        url('Pinar-VF.woff') format('woff'),
+        url('Pinar-VF.ttf') format('truetype'),
+        url('Pinar-VF.svg#Pinar-VF') format('svg');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
