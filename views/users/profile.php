@@ -147,7 +147,104 @@
 </div>
 
 <script>
-$(document).ready(function() {
+    $(document).ready(function() {
+    // اعتبارسنجی کد ملی
+    const nationalCodeInput = $('input[name="national_code"]');
+    
+    function validateNationalCode(code) {
+        if (!/^\d{10}$/.test(code)) return false;
+        
+        const check = parseInt(code[9]);
+        let sum = 0;
+        for (let i = 0; i < 9; i++) {
+            sum += parseInt(code[i]) * (10 - i);
+        }
+        const remainder = sum % 11;
+        return (remainder < 2 && check == remainder) || (remainder >= 2 && check == (11 - remainder));
+    }
+    
+    nationalCodeInput.on('input', function() {
+        const value = $(this).val();
+        const isValid = validateNationalCode(value);
+        
+        if (value.length > 0) {
+            if (!isValid) {
+                $(this).removeClass('is-valid').addClass('is-invalid');
+                // حذف پیام خطای قبلی اگر وجود داشت
+                $(this).siblings('.invalid-feedback').remove();
+                // اضافه کردن پیام خطای جدید
+                $(this).after('<div class="invalid-feedback">کد ملی وارد شده صحیح نیست</div>');
+            } else {
+                $(this).removeClass('is-invalid').addClass('is-valid');
+                $(this).siblings('.invalid-feedback').remove();
+            }
+        } else {
+            $(this).removeClass('is-valid is-invalid');
+            $(this).siblings('.invalid-feedback').remove();
+        }
+    });
+
+    // ذخیره فرم و نمایش نوتیفیکیشن
+    $('.profile-form').on('submit', function(e) {
+        if (!this.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+            $(this).addClass('was-validated');
+            return;
+        }
+
+        // جمع‌آوری مقادیر تغییر یافته
+        const formData = new FormData(this);
+        const changedFields = [];
+        const oldValues = {
+            name: '<?php echo htmlspecialchars($user['name']); ?>',
+            email: '<?php echo htmlspecialchars($user['email']); ?>',
+            mobile: '<?php echo htmlspecialchars($user['mobile'] ?? ''); ?>',
+            personnel_number: '<?php echo htmlspecialchars($user['personnel_number'] ?? ''); ?>',
+            national_code: '<?php echo htmlspecialchars($user['national_code'] ?? ''); ?>',
+            province: '<?php echo htmlspecialchars($user['province'] ?? ''); ?>',
+            city: '<?php echo htmlspecialchars($user['city'] ?? ''); ?>',
+            railway_station: '<?php echo htmlspecialchars($user['railway_station'] ?? ''); ?>',
+            address: '<?php echo htmlspecialchars($user['address'] ?? ''); ?>'
+        };
+
+        for (let [key, value] of formData.entries()) {
+            // رمز عبور را بررسی نمی‌کنیم
+            if (key.includes('password')) continue;
+            
+            // فقط فیلدهای تغییر کرده را اضافه می‌کنیم
+            if (value !== oldValues[key]) {
+                const label = $(`[name="${key}"]`).closest('.form-group').find('.form-label').text().replace(' *', '');
+                changedFields.push(`${label}: ${oldValues[key]} ➜ ${value}`);
+            }
+        }
+
+        if (changedFields.length > 0) {
+            const confirmMessage = changedFields.map(field => `<p>${field}</p>`).join('');
+
+            e.preventDefault();
+            
+            Swal.fire({
+                title: 'تایید تغییرات',
+                html: confirmMessage,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'ذخیره تغییرات',
+                cancelButtonText: 'انصراف',
+                customClass: {
+                    popup: 'swal2-rtl',
+                    title: 'text-right'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            });
+        }
+    });
+
+
+
     // لود کردن لیست استان‌ها
     $.getJSON('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/ostan.json', function(data) {
         // پر کردن لیست استان‌ها
@@ -213,6 +310,10 @@ $('form').on('submit', function(e) {
     }
     $(this).addClass('was-validated');
 });
-</script>
 
+
+// اضافه کردن اعتبارسنجی کد ملی و نوتیفیکیشن به اسکریپت‌های موجود
+
+</script>
+<script src="<?php echo BASE_URL; ?>/assets/js/profile-validation.js"></script>
 <?php require_once 'views/layouts/footer.php'; ?>
