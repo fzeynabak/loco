@@ -1,8 +1,3 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-?>
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -31,82 +26,128 @@ if (session_status() === PHP_SESSION_NONE) {
     <style>
     /* Reset */
     *, *::before, *::after {
-        box-sizing: border-box;
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
     }
     
     body {
         font-family: "Vazirmatn", system-ui, -apple-system, "Segoe UI", sans-serif;
-        min-height: 100vh;
         background: #f8f9fa;
+        min-height: 100vh;
+        position: relative;
     }
     
     /* Layout */
-    .main-wrapper {
+    .wrapper {
         display: flex;
         min-height: 100vh;
-        width: 100%;
     }
     
     /* Sidebar */
-    .sidebar {
+    .sidebar-wrapper {
         width: 280px;
-        position: fixed;
-        right: 0;
-        top: 0;
-        bottom: 0;
+        min-height: 100vh;
         background: #fff;
-        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-        z-index: 1030;
-        transition: all 0.3s ease;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
     }
     
     /* Main Content */
     .main-content {
         flex: 1;
-        margin-right: 280px;
         padding: 1.5rem;
-        transition: all 0.3s ease;
+        background: #f8f9fa;
+        min-height: 100vh;
+    }
+    
+    /* Navbar */
+    .navbar {
+        padding: 1rem;
+        background: #fff;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Tables */
+    .table-responsive {
+        margin-bottom: 1.5rem;
+    }
+    
+    .card {
+        border: none;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Utility Classes */
+    .sticky-top {
+        z-index: 1020;
     }
     
     /* Responsive */
     @media (max-width: 992px) {
-        .sidebar {
-            transform: translateX(100%);
+        .wrapper {
+            position: relative;
         }
         
-        .sidebar.show {
+        .sidebar-wrapper {
+            position: fixed;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 1040;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .sidebar-wrapper.show {
             transform: translateX(0);
         }
         
         .main-content {
-            margin-right: 0;
+            width: 100%;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1030;
+            display: none;
+        }
+        
+        .overlay.show {
+            display: block;
         }
     }
     </style>
 </head>
 <body>
 
-<div class="main-wrapper">
-    <!-- Sidebar Toggle Button for Mobile -->
+<div class="wrapper">
     <?php if (is_authenticated()): ?>
-        <button class="btn btn-primary d-lg-none position-fixed top-0 end-0 mt-2 me-2" 
+        <!-- Sidebar Toggle Button for Mobile -->
+        <button class="btn btn-primary d-lg-none position-fixed top-0 end-0 mt-2 me-2 z-3" 
                 type="button" 
-                data-bs-toggle="collapse" 
-                data-bs-target="#sidebar" 
-                aria-expanded="false">
+                onclick="toggleSidebar()">
             <i class="bi bi-list"></i>
         </button>
         
+        <!-- Overlay -->
+        <div class="overlay" onclick="toggleSidebar()"></div>
+        
         <!-- Sidebar -->
-        <div class="sidebar collapse d-lg-block" id="sidebar">
+        <div class="sidebar-wrapper">
             <?php require_once 'views/layouts/sidebar.php'; ?>
         </div>
     <?php endif; ?>
     
     <!-- Main Content -->
-    <main class="main-content">
+    <div class="main-content">
         <?php if (isset($_SESSION['flash_message'])): ?>
             <div class="alert alert-<?php echo $_SESSION['flash_type']; ?> alert-dismissible fade show" role="alert">
                 <?php echo $_SESSION['flash_message']; ?>
@@ -116,7 +157,7 @@ if (session_status() === PHP_SESSION_NONE) {
         <?php endif; ?>
         
         <?php echo $content ?? ''; ?>
-    </main>
+    </div>
 </div>
 
 <!-- Scripts -->
@@ -125,18 +166,16 @@ if (session_status() === PHP_SESSION_NONE) {
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
+function toggleSidebar() {
+    document.querySelector('.sidebar-wrapper').classList.toggle('show');
+    document.querySelector('.overlay').classList.toggle('show');
+}
+
+// Initialize Select2
 $(document).ready(function() {
-    // Initialize Select2
     $('.select2').select2({
         dir: 'rtl',
         width: '100%'
-    });
-    
-    // Handle Sidebar on Mobile
-    $(document).on('click touchstart', function(e) {
-        if (!$(e.target).closest('.sidebar, .btn-primary').length) {
-            $('#sidebar').collapse('hide');
-        }
     });
 });
 
@@ -158,6 +197,5 @@ function confirmLogout() {
     });
 }
 </script>
-
 </body>
 </html>
