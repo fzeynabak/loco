@@ -164,7 +164,7 @@ class AdminController {
         }
         
         // دریافت لیست انواع لوکوموتیو
-        $locomotives = $this->db->query("SELECT * FROM locomotive_types ORDER BY name")->fetchAll();
+    $locomotive_types = $this->db->query("SELECT * FROM locomotive_types ORDER BY name")->fetchAll();
         require_once 'views/admin/locomotives.php';
     }
 }

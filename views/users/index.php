@@ -1,4 +1,3 @@
-<?php require_once 'views/layouts/header.php'; ?>
 <?php require_once 'views/layouts/main.php'; ?>
 
 <div class="container-fluid pt-3"> <!-- افزودن فاصله از بالا -->
@@ -132,3 +131,4 @@ $(document).ready(function() {
     });
 });
 </script>
+<?php require_once 'views/layouts/main.php'; ?>

@@ -40,7 +40,7 @@ touch views/errors/search.php
 touch views/users/dashboard.php  
 touch views/users/profile.php  
 
-touch views/layouts/header.php  
+touch views/layouts/main.php  
 touch views/layouts/footer.php  
 touch views/layouts/admin-header.php  
 

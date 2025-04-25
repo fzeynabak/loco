@@ -1,4 +1,4 @@
-<?php require_once 'views/layouts/header.php'; ?>
+<?php require_once 'views/layouts/main.php'; ?>
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">

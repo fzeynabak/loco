@@ -1,4 +1,4 @@
-<?php require_once 'views/layouts/header.php'; ?>
+<?php require_once 'views/layouts/main.php'; ?>
 
 <div class="auth-container">
     <div class="auth-card">

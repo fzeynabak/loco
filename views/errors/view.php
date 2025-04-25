@@ -1,4 +1,4 @@
-<?php require_once 'views/layouts/header.php'; ?>
+<?php require_once 'views/layouts/main.php'; ?>
 
 <!-- تصویر سراسری در بالای صفحه -->
 <div class="error-header position-relative" style="height: 250px; overflow: hidden;">

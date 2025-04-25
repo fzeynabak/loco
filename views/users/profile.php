@@ -1,4 +1,4 @@
-<?php require_once 'views/layouts/header.php'; ?>
+<?php require_once 'views/layouts/main.php'; ?>
 
 <div class="profile-header">
     <div class="container">

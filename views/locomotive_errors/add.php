@@ -16,7 +16,7 @@
                         <div class="card-body">
                             <div class="d-flex align-items-center">
                                 <div class="position-relative" style="width: 100px; height: 100px;">
-                                    <img src="<?php echo BASE_URL; ?>/assets/img/error-guide.png" 
+                                    <img src="<?php echo BASE_URL; ?>/assets/images/error-guide.jpg" 
                                          alt="راهنمای ثبت خطا" 
                                          class="img-fluid rounded" 
                                          style="width: 100px; height: 100px; object-fit: cover;">
@@ -41,7 +41,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="position-relative" style="height: 200px;">
-                                <img src="<?php echo BASE_URL; ?>/assets/img/technical-diagram.png" 
+                                <img src="<?php echo BASE_URL; ?>/assets/images/technical-diagram.png" 
                                      alt="نقشه فنی" 
                                      class="img-fluid w-100 h-100" 
                                      style="object-fit: cover;">
@@ -57,7 +57,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="position-relative" style="height: 200px;">
-                                <img src="<?php echo BASE_URL; ?>/assets/img/video-guide.png" 
+                                <img src="<?php echo BASE_URL; ?>/assets/images/video-guide.png" 
                                      alt="ویدیوی راهنما" 
                                      class="img-fluid w-100 h-100" 
                                      style="object-fit: cover;">
