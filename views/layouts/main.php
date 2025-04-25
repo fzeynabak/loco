@@ -36,17 +36,24 @@ if (session_status() === PHP_SESSION_NONE) {
         box-sizing: border-box;
     }
     
+    html {
+        height: 100%;
+    }
+    
     body {
         font-family: "Vazirmatn", system-ui, -apple-system, "Segoe UI", sans-serif;
         background: #f8f9fa;
-        min-height: 100vh;
+        min-height: 100%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
     }
     
     /* Layout */
     .wrapper {
         display: flex;
+        min-height: 100vh;
         width: 100%;
-        position: relative;
     }
     
     /* Sidebar */
@@ -57,15 +64,20 @@ if (session_status() === PHP_SESSION_NONE) {
         position: fixed;
         top: 0;
         right: 0;
-        height: 100vh;
+        bottom: 0;
+        z-index: 1030;
         overflow-y: auto;
+        transition: transform 0.3s ease-in-out;
     }
     
     /* Main Content */
     .main-content {
         flex: 1;
+        width: calc(100% - 280px);
         margin-right: 280px;
+        min-height: 100vh;
         padding: 1.5rem;
+        transition: margin-right 0.3s ease-in-out;
         background: #f8f9fa;
     }
     
@@ -80,12 +92,29 @@ if (session_status() === PHP_SESSION_NONE) {
         margin-bottom: 1.5rem;
     }
     
-    /* Responsive */
-    @media (max-width: 992px) {
+    /* Mobile Toggle Button */
+    .sidebar-toggle {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1040;
+        display: none;
+    }
+    
+    /* Responsive Breakpoints */
+    @media (max-width: 1199.98px) {
+        .main-content {
+            width: calc(100% - 240px);
+            margin-right: 240px;
+        }
+        .sidebar-wrapper {
+            width: 240px;
+        }
+    }
+    
+    @media (max-width: 991.98px) {
         .sidebar-wrapper {
             transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
-            z-index: 1040;
         }
         
         .sidebar-wrapper.show {
@@ -93,8 +122,12 @@ if (session_status() === PHP_SESSION_NONE) {
         }
         
         .main-content {
-            margin-right: 0;
             width: 100%;
+            margin-right: 0;
+        }
+        
+        .sidebar-toggle {
+            display: block;
         }
         
         .overlay {
@@ -104,12 +137,27 @@ if (session_status() === PHP_SESSION_NONE) {
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 1030;
+            z-index: 1029;
             display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
         }
         
         .overlay.show {
             display: block;
+            opacity: 1;
+        }
+    }
+    
+    @media (max-width: 767.98px) {
+        .main-content {
+            padding: 1rem;
+        }
+    }
+    
+    @media (max-width: 575.98px) {
+        .main-content {
+            padding: 0.75rem;
         }
     }
     </style>
