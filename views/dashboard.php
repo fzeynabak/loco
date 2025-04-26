@@ -1,7 +1,8 @@
 <?php 
 require_once 'views/layouts/main.php';
-require_once 'assets\plugins\jdf.php'; // افزودن کتابخانه تبدیل تاریخ شمسی
+require_once dirname(__FILE__) . '/../assets/plugins/jdf.php'; 
 ?>
+
 <!-- استایل‌های داشبورد -->
 <style>
 /* متغیرهای رنگ */
@@ -280,13 +281,13 @@ require_once 'assets\plugins\jdf.php'; // افزودن کتابخانه تبدی
                             <h6 class="stat-title text-white">گزارشات امروز</h6>
                             <h3 class="stat-value text-white mb-0">
                                 <?php
-                                $stmt = $db->query("SELECT COUNT(*) FROM reports WHERE DATE(created_at) = CURRENT_DATE");
+                                $stmt = $db->query("SELECT COUNT(*) FROM breakdowns WHERE DATE(created_at) = CURRENT_DATE");
                                 echo number_format($stmt->fetchColumn());
                                 ?>
                             </h3>
                         </div>
                     </div>
-                    <a href="<?php echo BASE_URL; ?>/reports" class="stat-link">
+                    <a href="<?php echo BASE_URL; ?>/breakdowns" class="stat-link">
                         مشاهده همه
                         <i class="bi bi-chevron-left"></i>
                     </a>
@@ -310,7 +311,7 @@ require_once 'assets\plugins\jdf.php'; // افزودن کتابخانه تبدی
                 <thead>
                     <tr>
                         <th>وضعیت</th>
-                        <th>عنوان خطا</th>
+                        <th>کد خطا</th>
                         <th>لوکوموتیو</th>
                         <th>گزارش‌دهنده</th>
                         <th>تاریخ</th>
@@ -319,7 +320,7 @@ require_once 'assets\plugins\jdf.php'; // افزودن کتابخانه تبدی
                 <tbody>
                     <?php
                     $stmt = $db->query("
-                        SELECT e.*, u.name as user_name 
+                        SELECT e.*, e.locomotive_type as loco_name, u.name as user_name 
                         FROM locomotive_errors e
                         LEFT JOIN users u ON e.created_by = u.id
                         ORDER BY e.created_at DESC LIMIT 5
@@ -333,11 +334,11 @@ require_once 'assets\plugins\jdf.php'; // افزودن کتابخانه تبدی
                         </td>
                         <td>
                             <a href="<?php echo BASE_URL; ?>/errors/view/<?php echo $error['id']; ?>" 
-                            class="text-decoration-none text-dark">
-                                <?php echo htmlspecialchars($error['error_code']); ?> <!-- استفاده از error_code به جای title -->
+                               class="text-decoration-none text-dark">
+                                <?php echo htmlspecialchars($error['error_code']); ?>
                             </a>
                         </td>
-                        <td><?php echo htmlspecialchars($error['locomotive_type']); ?></td>
+                        <td><?php echo htmlspecialchars($error['loco_name']); ?></td>
                         <td><?php echo htmlspecialchars($error['user_name']); ?></td>
                         <td><?php 
                             if (function_exists('jdate')) {

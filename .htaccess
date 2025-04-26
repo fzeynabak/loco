@@ -1,5 +1,6 @@
 # Enable rewrite engine
 RewriteEngine On
+RewriteBase /
 
 # Set base path
 RewriteBase /loco/
@@ -58,3 +59,4 @@ php_value session.cookie_samesite "Strict"
 php_value error_log logs/error.log
 php_value display_errors 1
 php_value error_reporting E_ALL
+
