@@ -24,7 +24,12 @@ if (session_status() === PHP_SESSION_NONE) {
     
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    
+        <link rel="manifest" href="<?php echo BASE_URL; ?>/manifest.json">
+    <meta name="theme-color" content="#0d6efd">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="مدیریت خطاها">
+    <link rel="apple-touch-icon" href="<?php echo BASE_URL; ?>/assets/images/icons/icon-152x152.png">
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
@@ -377,6 +382,14 @@ if (session_status() === PHP_SESSION_NONE) {
                                 <span>افزودن خطا</span>
                             </a>
                         </li>
+                        
+                        <li class="nav-item">
+                            <a href="<?php echo BASE_URL; ?>/errors/breakdown" 
+                               class="nav-link <?php echo $route === 'errors/breakdown' ? 'active' : ''; ?>">
+                                <i class="bi bi-wrench me-2"></i>
+                                <span>گزارش خرابی</span>
+                            </a>
+                        </li>
                         <?php endif; ?>
                         
                         <?php if (is_admin()): ?>
@@ -506,6 +519,56 @@ if (session_status() === PHP_SESSION_NONE) {
             }
         });
     }
+    </script>
+        <!-- PWA Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('<?php echo BASE_URL; ?>/service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered:', registration);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+
+        // دریافت اجازه برای نوتیفیکیشن‌ها
+        Notification.requestPermission().then(function(permission) {
+            if (permission === 'granted') {
+                console.log('Notification permission granted.');
+            }
+        });
+
+        // نمایش پیام نصب PWA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // نمایش دکمه نصب بعد از 3 ثانیه
+            setTimeout(() => {
+                Swal.fire({
+                    title: 'نصب برنامه',
+                    text: 'آیا مایلید برنامه را روی دستگاه خود نصب کنید؟',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'نصب',
+                    cancelButtonText: 'بعداً'
+                }).then((result) => {
+                    if (result.isConfirmed && deferredPrompt) {
+                        deferredPrompt.prompt();
+                        deferredPrompt.userChoice.then((choiceResult) => {
+                            if (choiceResult.outcome === 'accepted') {
+                                console.log('User accepted the install prompt');
+                            }
+                            deferredPrompt = null;
+                        });
+                    }
+                });
+            }, 3000);
+        });
     </script>
 </body>
 </html>
