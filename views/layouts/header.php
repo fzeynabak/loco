@@ -9,11 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سیستم مدیریت خطاهای لوکوموتیو</title>
-    <!-- Add these lines to your header.php -->
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/plugins/persian-datepicker/persian-datepicker.min.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/plugins/leaflet/leaflet.css">
-    <script src="<?php echo BASE_URL; ?>/assets/plugins/persian-datepicker/dist/persian-datepicker.min.js"></script>
-    <script src="<?php echo BASE_URL; ?>/assets/plugins/leaflet/leaflet.js"></script>
+    
     <!-- فونت ایران‌سنس -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     
@@ -23,13 +19,28 @@ if (session_status() === PHP_SESSION_NONE) {
     <!-- فونت‌آوسام و بوت‌استرپ آیکون -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
 
-
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Persian Date -->
+    <link rel="stylesheet" href="https://unpkg.com/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css">
+    <script src="https://unpkg.com/persian-date@1.1.0/dist/persian-date.min.js"></script>
+    <script src="https://unpkg.com/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         :root {
@@ -67,15 +78,6 @@ if (session_status() === PHP_SESSION_NONE) {
             color: white !important;
         }
 
-        /* دکمه همبرگر */
-        .main-header .navbar-toggler {
-            border-color: rgba(255,255,255,0.5);
-        }
-
-        .main-header .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.7%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-        }
-
         /* منوی کاربر */
         .user-menu .dropdown-toggle {
             color: white !important;
@@ -97,46 +99,40 @@ if (session_status() === PHP_SESSION_NONE) {
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
         }
 
-        /* زیرمنوها */
-        .submenu {
-            position: relative;
-        }
-
-        .submenu .dropdown-menu {
-            right: 100%;
-            top: 0;
-            margin: 0;
-        }
-
-        /* ریسپانسیو */
-        @media (max-width: 992px) {
-            .main-header .navbar-collapse {
-                background: rgba(0,0,0,0.1);
-                padding: 1rem;
-                border-radius: 0.5rem;
-                margin-top: 1rem;
-            }
-
-            .submenu .dropdown-menu {
-                right: 0;
-                top: 100%;
+        /* PWA Optimizations */
+        @media (display-mode: standalone) {
+            .container-fluid {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+                padding-left: env(safe-area-inset-left);
+                padding-right: env(safe-area-inset-right);
             }
         }
 
-        /* انیمیشن‌های منو */
-        .dropdown-menu {
-            animation: slideDown 0.2s ease-out;
+        /* Select2 RTL Fixes */
+        .select2-container--bootstrap-5 .select2-selection {
+            padding: 0.375rem 0.75rem;
         }
 
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+            padding: 0;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
+            left: 0.75rem;
+            right: auto;
+        }
+
+        /* Persian Datepicker RTL Fixes */
+        .datepicker-plot-area {
+            font-family: "Vazirmatn", system-ui, -apple-system, "Segoe UI", sans-serif !important;
+        }
+
+        .plotarea-days-box, 
+        .datepicker-plot-area .datepicker-day-view .table-days td,
+        .datepicker-plot-area .datepicker-year-view .year-item,
+        .datepicker-plot-area .datepicker-month-view .month-item {
+            font-size: 14px;
         }
     </style>
 </head>
