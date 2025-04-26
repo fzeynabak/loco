@@ -319,7 +319,7 @@
                     $stmt = $db->query("
                         SELECT e.*, l.name as loco_name, u.name as user_name 
                         FROM locomotive_errors e
-                        LEFT JOIN locomotives l ON e.locomotive_id = l.id
+                        LEFT JOIN locomotive_types l ON e.locomotive_id = l.id
                         LEFT JOIN users u ON e.reported_by = u.id
                         ORDER BY e.created_at DESC LIMIT 5
                     ");
