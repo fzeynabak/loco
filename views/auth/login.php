@@ -1,6 +1,5 @@
 <?php require_once 'views/layouts/main.php'; ?>
-    <link rel="stylesheet" href="assets/css/login.css">
-    <script src="assets/js/login.js"></script>
+
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-row">
@@ -132,11 +131,155 @@
         </div>
     </div>
 </div>
-
 <style>
+/* استایل‌های صفحه لاگین */
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+}
 
+.auth-card {
+    width: 100%;
+    max-width: 1200px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.auth-row {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.auth-right {
+    flex: 1;
+    padding: 3rem;
+}
+
+.auth-left {
+    flex: 1;
+    background: linear-gradient(135deg, #0d6efd 0%, #0099ff 100%);
+    padding: 3rem;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.auth-logo {
+    height: 48px;
+    object-fit: contain;
+}
+
+.auth-form-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.form-floating > .form-control:focus ~ label {
+    color: #0d6efd;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+}
+
+.social-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border: 2px solid #e9ecef;
+}
+
+.social-btn:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.auth-illustration {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+}
+
+.input-group-text {
+    border-color: #dee2e6;
+}
+
+.form-control {
+    border-color: #dee2e6;
+}
+
+.form-floating > .form-control,
+.form-floating > .form-control:focus {
+    padding-right: 45px;
+}
+
+/* Animation */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
+
+.auth-illustration img {
+    animation: float 6s ease-in-out infinite;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .auth-right {
+        padding: 2rem;
+    }
+    
+    .auth-form-container {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .auth-container {
+        padding: 1rem;
+    }
+    
+    .auth-right {
+        padding: 1.5rem;
+    }
+    
+    .auth-card {
+        border-radius: 10px;
+    }
+}
+label.ms-4 {
+    margin-right: unset;
+    margin-left: 12px;
+}
+input#username {
+    padding-left: 12px !important;
+    text-align: left;
+}
+.input-group {
+    direction: ltr;
+}
 </style>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // Toggle password visibility
