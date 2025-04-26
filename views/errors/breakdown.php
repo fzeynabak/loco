@@ -1,5 +1,9 @@
 <?php require_once 'views/layouts/main.php'; ?>
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@majidh1/jalalidatepicker/dist/jalalidatepicker.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@majidh1/jalalidatepicker/dist/jalalidatepicker.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="<?php echo BASE_URL; ?>/assets/js/railway-map.js"></script>
 <div class="container-fluid pt-3">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -27,13 +31,8 @@
                     <div class="col-md-3">
                         <div class="mb-3">
                             <label class="form-label">استان <span class="text-danger">*</span></label>
-                            <select name="province_id" id="province" class="form-select select2" required>
+                            <select name="province_id" id="province" class="form-select" required>
                                 <option value="">انتخاب کنید</option>
-                                <?php foreach ($provinces as $province): ?>
-                                    <option value="<?php echo $province['id']; ?>">
-                                        <?php echo htmlspecialchars($province['name']); ?>
-                                    </option>
-                                <?php endforeach; ?>
                             </select>
                             <div class="invalid-feedback">لطفاً استان را انتخاب کنید</div>
                         </div>
@@ -42,7 +41,7 @@
                     <div class="col-md-3">
                         <div class="mb-3">
                             <label class="form-label">شهر <span class="text-danger">*</span></label>
-                            <select name="city_id" id="city" class="form-select select2" required>
+                            <select name="city_id" id="city" class="form-select" required>
                                 <option value="">ابتدا استان را انتخاب کنید</option>
                             </select>
                             <div class="invalid-feedback">لطفاً شهر را انتخاب کنید</div>
@@ -52,7 +51,7 @@
                     <div class="col-md-3">
                         <div class="mb-3">
                             <label class="form-label">ایستگاه <span class="text-danger">*</span></label>
-                            <select name="station_id" id="station" class="form-select select2" required>
+                            <select name="station_id" id="station" class="form-select" required>
                                 <option value="">ابتدا شهر را انتخاب کنید</option>
                             </select>
                             <div class="invalid-feedback">لطفاً ایستگاه را انتخاب کنید</div>
@@ -62,21 +61,19 @@
                     <div class="col-md-3">
                         <div class="mb-3">
                             <label class="form-label">تاریخ و ساعت <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <input type="text" 
-                                       name="occurrence_date" 
-                                       id="occurrence_date" 
-                                       class="form-control" 
-                                       required 
-                                       data-jdp
-                                       autocomplete="off"
-                                       placeholder="انتخاب کنید">
-                                <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
-                            </div>
+                            <input type="text" 
+                                name="occurrence_date" 
+                                id="occurrence_date" 
+                                data-jdp 
+                                class="form-control" 
+                                placeholder="انتخاب کنید" 
+                                required 
+                                autocomplete="off">
                             <div class="invalid-feedback">لطفاً تاریخ و ساعت را به فرمت صحیح وارد کنید</div>
                         </div>
                     </div>
                 </div>
+        <input type="hidden" id="occurrence_date_alt" name="occurrence_date_timestamp">
 
                 <!-- اطلاعات لوکوموتیو -->
                 <div class="row mb-4">
@@ -89,7 +86,7 @@
                     <div class="col-md-4">
                         <div class="mb-3">
                             <label class="form-label">نوع لوکوموتیو <span class="text-danger">*</span></label>
-                            <select name="locomotive_type_id" class="form-select select2" required>
+                            <select name="locomotive_type_id" class="form-select" required>
                                 <option value="">انتخاب کنید</option>
                                 <?php foreach ($locomotive_types as $type): ?>
                                     <option value="<?php echo $type['id']; ?>">
@@ -209,7 +206,7 @@
     }
     
     .form-control, .form-select {
-        font-size: 16px; /* برای جلوگیری از زوم خودکار در iOS */
+        font-size: 16px;
     }
 }
 
@@ -253,175 +250,189 @@
 }
 </style>
 
+<!-- تعریف متغیر BASE_URL برای استفاده در اسکریپت -->
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // ذخیره دیتای فایل‌های JSON
-    let provinces = [];
-    let cities = [];
-    let railways = {};
-
-    // لود فایل JSON استان‌ها
-    fetch('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/ostan.json')
-        .then(response => response.json())
-        .then(data => {
-            provinces = data;
-            // آپدیت سلکت باکس استان‌ها
-            const provinceSelect = document.getElementById('province');
-            provinceSelect.innerHTML = '<option value="">انتخاب کنید</option>';
-            provinces.forEach(province => {
-                provinceSelect.add(new Option(province.name, province.id));
-            });
-        })
-        .catch(error => console.error('Error loading provinces:', error));
-
-    // لود فایل JSON شهرها
-    fetch('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/shahr.json')
-        .then(response => response.json())
-        .then(data => {
-            cities = data;
-        })
-        .catch(error => console.error('Error loading cities:', error));
-
-    // لود فایل JSON ایستگاه‌ها
-    fetch('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/list-railway.json')
-        .then(response => response.json())
-        .then(data => {
-            railways = data;
-        })
-        .catch(error => console.error('Error loading railway stations:', error));
-
-    // تنظیمات Select2
-    $('.select2').select2({
-        theme: 'bootstrap-5',
-        width: '100%',
-        language: {
-            noResults: function() {
-                return "نتیجه‌ای یافت نشد";
-            }
-        }
-    });
-
-    // تنظیمات PersianDatepicker
+    const BASE_URL = '<?php echo BASE_URL; ?>';
+</script>
+// جایگزین کردن اسکریپت قبلی با این کد
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // تنظیمات تاریخ
+    let selectedDate = null;
+    
+    // ایجاد تقویم شمسی با استفاده از persianDatepicker
     $('#occurrence_date').persianDatepicker({
+        format: 'YYYY/MM/DD',
         initialValue: false,
-        format: 'YYYY/MM/DD HH:mm',
-        altField: '#occurrence_date_alt',
-        timePicker: {
-            enabled: true,
-            meridian: {
-                enabled: false
-            }
-        },
         autoClose: true,
-        onSelect: function(unix) {
-            $('#occurrence_date').trigger('input');
-        },
-        navigator: {
-            scroll: {
-                enabled: false
-            }
-        },
         toolbox: {
             calendarSwitch: {
                 enabled: false
             }
         },
-        onlyTimePicker: false,
-        responsive: true
+        dayPicker: {
+            onSelect: function(unix) {
+                selectedDate = unix;
+                updateTimestamp();
+            }
+        },
+        observer: true,
+        onSelect: function(unix) {
+            selectedDate = unix;
+            updateTimestamp();
+        }
     });
 
-    // لود شهرها بر اساس استان
-    $('#province').on('change', function() {
-        const provinceId = parseInt($(this).val());
-        const citySelect = $('#city');
-        citySelect.empty().append('<option value="">انتخاب کنید</option>');
+    // مدیریت ورودی ساعت
+    const timeInput = document.getElementById('occurrence_time');
+    timeInput.addEventListener('input', function(e) {
+        let value = e.target.value;
         
-        if (provinceId && cities.length > 0) {
-            // فیلتر شهرهای استان انتخاب شده
-            const provinceCities = cities.filter(city => city.ostan === provinceId);
-            provinceCities.forEach(city => {
-                citySelect.append(new Option(city.name, city.id));
-            });
+        // اضافه کردن : بعد از ساعت
+        if (value.length === 2 && !value.includes(':')) {
+            value += ':';
+            e.target.value = value;
         }
         
-        citySelect.trigger('change');
-    });
-
-    // لود ایستگاه‌ها بر اساس شهر
-    $('#city').on('change', function() {
-        const cityId = parseInt($(this).val());
-        const stationSelect = $('#station');
-        stationSelect.empty().append('<option value="">انتخاب کنید</option>');
-        
-        if (cityId && cities.length > 0 && Object.keys(railways).length > 0) {
-            const selectedCity = cities.find(c => c.id === cityId);
-            if (selectedCity) {
-                Object.values(railways).forEach(route => {
-                    route.stations.forEach(station => {
-                        if (station.city === selectedCity.name) {
-                            const option = new Option(station.name, station.id);
-                            if (!Array.from(stationSelect.options).some(opt => opt.text === station.name)) {
-                                stationSelect.add(option);
-                            }
-                        }
-                    });
-                });
+        // اعتبارسنجی فرمت ساعت
+        if (value.length === 5) {
+            const [hours, minutes] = value.split(':');
+            if (hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60) {
+                updateTimestamp();
             }
         }
-        
-        stationSelect.trigger('change');
     });
 
-    // اعتبارسنجی فرم
-    const form = document.querySelector('form');
-    form.addEventListener('submit', function(event) {
-        if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-            
-            Swal.fire({
-                icon: 'error',
-                title: 'خطا!',
-                text: 'لطفاً تمام فیلدهای الزامی را پر کنید',
-                confirmButtonText: 'باشه'
-            });
+    // آپدیت timestamp
+    function updateTimestamp() {
+        if (selectedDate && timeInput.value) {
+            const [hours, minutes] = timeInput.value.split(':');
+            const date = new persianDate(selectedDate);
+            date.hour(parseInt(hours));
+            date.minute(parseInt(minutes));
+            document.getElementById('occurrence_timestamp').value = date.unix();
         }
-        form.classList.add('was-validated');
-    }, false);
+    }
 
-    // اعتبارسنجی فایل‌ها
-    document.querySelectorAll('input[type="file"]').forEach(input => {
-        input.addEventListener('change', function() {
-            const files = this.files;
-            const maxFiles = parseInt(this.dataset.maxFiles);
-            const maxSize = this.name === 'images[]' ? 2 : 5; // مگابایت
+    // تنظیمات نقشه
+    const map = L.map('railwayMap').setView([35.6892, 51.3890], 6);
+    
+    // اضافه کردن لایه نقشه
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-            if (files.length > maxFiles) {
-                this.value = '';
-                Swal.fire({
-                    icon: 'error',
-                    title: 'خطا!',
-                    text: `حداکثر تعداد فایل مجاز ${maxFiles} عدد است`,
-                    confirmButtonText: 'باشه'
+    // آرایه برای نگهداری مارکرها
+    let markers = [];
+    let railwayPath = null;
+    let selectedMarker = null;
+
+    // لود مسیرهای ریلی
+    fetch(BASE_URL + '/assets/plugins/iran-cities/list-railway.json')
+        .then(response => response.json())
+        .then(railways => {
+            Object.values(railways).forEach(route => {
+                const coordinates = [];
+                route.stations.forEach(station => {
+                    // اضافه کردن مختصات هر ایستگاه
+                    const stationCoords = getStationCoordinates(station.name);
+                    if (stationCoords) {
+                        coordinates.push(stationCoords);
+                        
+                        // ایجاد مارکر برای هر ایستگاه
+                        const marker = L.marker(stationCoords, {
+                            icon: L.divIcon({
+                                className: 'station-marker',
+                                html: `<div class="marker-pin"></div>`,
+                                iconSize: [30, 30],
+                                iconAnchor: [15, 15]
+                            })
+                        })
+                        .bindPopup(station.name)
+                        .addTo(map);
+                        
+                        markers.push(marker);
+                    }
                 });
-                return;
-            }
 
-            for (let file of files) {
-                if (file.size > maxSize * 1024 * 1024) {
-                    this.value = '';
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'خطا!',
-                        text: `حجم هر فایل نباید بیشتر از ${maxSize} مگابایت باشد`,
-                        confirmButtonText: 'باشه'
-                    });
-                    break;
+                // رسم خط ریلی بین ایستگاه‌ها
+                if (coordinates.length > 1) {
+                    railwayPath = L.polyline(coordinates, {
+                        color: '#2563eb',
+                        weight: 3,
+                        opacity: 0.8
+                    }).addTo(map);
                 }
+            });
+
+            // تنظیم zoom به اندازه مناسب
+            if (railwayPath) {
+                map.fitBounds(railwayPath.getBounds());
             }
-        });
+        })
+        .catch(error => console.error('خطا در لود مسیرهای ریلی:', error));
+
+    // تابع برای گرفتن مختصات ایستگاه‌ها
+    function getStationCoordinates(stationName) {
+        // مختصات ایستگاه‌های اصلی (به عنوان مثال)
+        const coordinates = {
+            'تهران': [35.6892, 51.3890],
+            'گرمسار': [35.2182, 52.3409],
+            'سمنان': [35.2282, 53.3915],
+            'دامغان': [36.1680, 54.3480],
+            'شاهرود': [36.4182, 54.9763],
+            'میامی': [36.4097, 55.6542],
+            'سبزوار': [36.2152, 57.6678],
+            'نیشابور': [36.2146, 58.7958],
+            'مشهد': [36.2605, 59.6168]
+        };
+        return coordinates[stationName];
+    }
+
+    // اضافه کردن قابلیت کلیک روی مسیر برای انتخاب محل خرابی
+    map.on('click', function(e) {
+        // حذف مارکر قبلی اگر وجود داشته باشد
+        if (selectedMarker) {
+            map.removeLayer(selectedMarker);
+        }
+
+        // ایجاد مارکر جدید
+        selectedMarker = L.marker(e.latlng, {
+            icon: L.divIcon({
+                className: 'breakdown-marker',
+                html: '<div class="marker-pin breakdown"></div>',
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+            })
+        }).addTo(map);
+
+        // ذخیره موقعیت در input مخفی
+        document.getElementById('selected_location').value = `${e.latlng.lat},${e.latlng.lng}`;
     });
+
+    // اضافه کردن استایل برای مارکرها
+    const style = document.createElement('style');
+    style.textContent = `
+        .marker-pin {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #2563eb;
+            border: 2px solid #fff;
+            box-shadow: 0 0 4px rgba(0,0,0,0.3);
+        }
+        .marker-pin.breakdown {
+            background: #dc2626;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
 });
 </script>
-<script src="<?php echo BASE_URL; ?>/assets/js/breakdown.js"></script>
+
 <?php require_once 'views/layouts/footer.php'; ?>

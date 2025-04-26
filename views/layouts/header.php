@@ -31,7 +31,6 @@ if (session_status() === PHP_SESSION_NONE) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 
     <!-- Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <!-- Persian Date -->
@@ -41,8 +40,21 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
-    <style>
+<!-- Select2 -->
+<link href="<?php echo BASE_URL; ?>/assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
+<link href="<?php echo BASE_URL; ?>/assets/plugins/select2/css/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<script src="<?php echo BASE_URL; ?>/assets/plugins/select2/js/select2.full.min.js"></script>
+
+<!-- Persian Datepicker -->
+<link href="<?php echo BASE_URL; ?>/assets/plugins/persian-datepicker/dist/css/persian-datepicker.min.css" rel="stylesheet" />
+<script src="<?php echo BASE_URL; ?>/assets/plugins/persian-datepicker/dist/js/persian-datepicker.min.js"></script>
+
+<style>
         :root {
             --bs-primary: #2563eb;
             --bs-primary-rgb: 37, 99, 235;
