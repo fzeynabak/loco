@@ -1,5 +1,7 @@
-<?php require_once 'views/layouts/main.php'; ?>
-
+<?php 
+require_once 'views/layouts/main.php';
+require_once 'assets\plugins\jdf.php'; // افزودن کتابخانه تبدیل تاریخ شمسی
+?>
 <!-- استایل‌های داشبورد -->
 <style>
 /* متغیرهای رنگ */
@@ -317,11 +319,11 @@
                 <tbody>
                     <?php
                     $stmt = $db->query("
-    SELECT e.*, e.locomotive_type as loco_name, u.name as user_name 
-    FROM locomotive_errors e
-    LEFT JOIN users u ON e.created_by = u.id
-    ORDER BY e.created_at DESC LIMIT 5
-");
+                        SELECT e.*, u.name as user_name 
+                        FROM locomotive_errors e
+                        LEFT JOIN users u ON e.created_by = u.id
+                        ORDER BY e.created_at DESC LIMIT 5
+                    ");
                     while ($error = $stmt->fetch()): 
                     ?>
                     <tr>
@@ -331,13 +333,19 @@
                         </td>
                         <td>
                             <a href="<?php echo BASE_URL; ?>/errors/view/<?php echo $error['id']; ?>" 
-                               class="text-decoration-none text-dark">
-                                <?php echo htmlspecialchars($error['title']); ?>
+                            class="text-decoration-none text-dark">
+                                <?php echo htmlspecialchars($error['error_code']); ?> <!-- استفاده از error_code به جای title -->
                             </a>
                         </td>
-                        <td><?php echo htmlspecialchars($error['loco_name']); ?></td>
+                        <td><?php echo htmlspecialchars($error['locomotive_type']); ?></td>
                         <td><?php echo htmlspecialchars($error['user_name']); ?></td>
-                        <td><?php echo jdate('Y/m/d H:i', strtotime($error['created_at'])); ?></td>
+                        <td><?php 
+                            if (function_exists('jdate')) {
+                                echo jdate('Y/m/d H:i', strtotime($error['created_at']));
+                            } else {
+                                echo date('Y/m/d H:i', strtotime($error['created_at']));
+                            }
+                        ?></td>
                     </tr>
                     <?php endwhile; ?>
                 </tbody>
