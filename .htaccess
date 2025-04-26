@@ -1,9 +1,4 @@
-# Enable rewrite engine
-RewriteEngine On
-RewriteBase /
 
-# Set base path
-RewriteBase /loco/
 
 # Allow direct access to manifest.json and service-worker.js
 RewriteRule ^(manifest\.json|service-worker\.js)$ $1 [L]
