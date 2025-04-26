@@ -134,3 +134,14 @@
         border-radius: 10px;
     }
 }
+label.ms-4 {
+    margin-right: unset;
+    margin-left: 12px;
+}
+input#username {
+    padding-left: 12px !important;
+    text-align: left;
+}
+.input-group {
+    direction: ltr;
+}

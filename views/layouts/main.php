@@ -58,10 +58,12 @@ if (session_status() === PHP_SESSION_NONE) {
     }
 
     body {
-        font-family: "Vazirmatn", system-ui, -apple-system, "Segoe UI", sans-serif;
-        background: #f8f9fa;
-        padding-top: 70px;
+    font-family: "Vazirmatn", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: #f8f9fa;
     }
+    body.has-header {
+    padding-top: 70px;
+}
 
     /* متغیرهای CSS */
     :root {
@@ -471,16 +473,21 @@ if (session_status() === PHP_SESSION_NONE) {
     <?php endif; ?>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <?php if (isset($_SESSION['flash_message'])): ?>
-            <div class="alert alert-<?php echo $_SESSION['flash_type']; ?> alert-dismissible fade show" role="alert">
-                <?php echo $_SESSION['flash_message']; ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            <?php unset($_SESSION['flash_message'], $_SESSION['flash_type']); ?>
-        <?php endif; ?>
-        
+        <?php if (is_authenticated()): ?>
+        <main class="main-content">
+            <?php if (isset($_SESSION['flash_message'])): ?>
+                <div class="alert alert-<?php echo $_SESSION['flash_type']; ?> alert-dismissible fade show" role="alert">
+                    <?php echo $_SESSION['flash_message']; ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <?php unset($_SESSION['flash_message'], $_SESSION['flash_type']); ?>
+            <?php endif; ?>
+            
+            <?php echo $content ?? ''; ?>
+        </main>
+    <?php else: ?>
         <?php echo $content ?? ''; ?>
+    <?php endif; ?>
     </main>
 
     <!-- Scripts -->
