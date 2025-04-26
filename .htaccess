@@ -46,7 +46,7 @@ php_value session.use_only_cookies 1
 php_value session.cookie_samesite "Strict"
 
 
-
+RewriteBase /loco/
 
 
 # تنظیمات PHP

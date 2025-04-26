@@ -521,7 +521,8 @@ if (session_status() === PHP_SESSION_NONE) {
     }
     </script>
         <!-- PWA Registration -->
-    <script>
+   <script>
+        // PWA Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('<?php echo BASE_URL; ?>/service-worker.js')
@@ -534,40 +535,34 @@ if (session_status() === PHP_SESSION_NONE) {
             });
         }
 
-        // دریافت اجازه برای نوتیفیکیشن‌ها
-        Notification.requestPermission().then(function(permission) {
-            if (permission === 'granted') {
-                console.log('Notification permission granted.');
+        // Toggle Mobile Menu - اصلاح خطای classList
+        function toggleMenu() {
+            const mainNav = document.getElementById('mainNav');
+            if (mainNav) {
+                mainNav.classList.toggle('show');
+            }
+        }
+
+        // Header Scroll Effect - اصلاح خطای classList
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.main-header');
+            if (header) {
+                if (window.scrollY > 10) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
             }
         });
 
-        // نمایش پیام نصب PWA
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-
-            // نمایش دکمه نصب بعد از 3 ثانیه
-            setTimeout(() => {
-                Swal.fire({
-                    title: 'نصب برنامه',
-                    text: 'آیا مایلید برنامه را روی دستگاه خود نصب کنید؟',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'نصب',
-                    cancelButtonText: 'بعداً'
-                }).then((result) => {
-                    if (result.isConfirmed && deferredPrompt) {
-                        deferredPrompt.prompt();
-                        deferredPrompt.userChoice.then((choiceResult) => {
-                            if (choiceResult.outcome === 'accepted') {
-                                console.log('User accepted the install prompt');
-                            }
-                            deferredPrompt = null;
-                        });
-                    }
+        // Initialize Select2
+        $(document).ready(function() {
+            if ($.fn.select2) {
+                $('.select2').select2({
+                    dir: 'rtl',
+                    width: '100%'
                 });
-            }, 3000);
+            }
         });
     </script>
 </body>

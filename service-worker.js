@@ -5,19 +5,10 @@ const urlsToCache = [
     '/loco/',
     '/loco/offline.php',
     '/loco/assets/css/style.css',
-    '/loco/assets/js/main.js',
-    'https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css',
-    'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.rtl.min.css',
-    'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css',
-    'https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.css',
-    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
-    'https://code.jquery.com/jquery-3.6.0.min.js',
-    'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js',
-    'https://cdn.jsdelivr.net/npm/sweetalert2@11',
-    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+    '/loco/assets/js/main.js'
 ];
 
-// Service Worker Installation
+// Installation
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
@@ -27,7 +18,7 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// Service Worker Activation
+// Activation
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -42,26 +33,25 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch Event Handling
+// Fetch Event
 self.addEventListener('fetch', (event) => {
-    // Handle API calls differently
-    if (event.request.url.includes('/api/')) {
+    // Skip chrome-extension requests
+    if (event.request.url.startsWith('chrome-extension://')) {
+        return;
+    }
+
+    // Handle navigation requests
+    if (event.request.mode === 'navigate') {
         event.respondWith(
             fetch(event.request)
                 .catch(() => {
-                    return new Response(
-                        JSON.stringify({
-                            error: 'اتصال به اینترنت برقرار نیست'
-                        }),
-                        {
-                            headers: { 'Content-Type': 'application/json' }
-                        }
-                    );
+                    return caches.match(OFFLINE_URL);
                 })
         );
         return;
     }
 
+    // Handle other requests
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
@@ -69,13 +59,22 @@ self.addEventListener('fetch', (event) => {
                     return response;
                 }
 
-                return fetch(event.request)
+                // Clone the request
+                const fetchRequest = event.request.clone();
+
+                return fetch(fetchRequest)
                     .then((response) => {
                         // Check if we received a valid response
-                        if (!response || response.status !== 200 || response.type !== 'basic') {
+                        if (!response || response.status !== 200) {
                             return response;
                         }
 
+                        // Skip chrome-extension responses
+                        if (fetchRequest.url.startsWith('chrome-extension://')) {
+                            return response;
+                        }
+
+                        // Clone the response
                         const responseToCache = response.clone();
 
                         caches.open(CACHE_NAME)
@@ -86,37 +85,10 @@ self.addEventListener('fetch', (event) => {
                         return response;
                     })
                     .catch(() => {
-                        // If the network is unavailable, try to return the offline page
                         if (event.request.mode === 'navigate') {
                             return caches.match(OFFLINE_URL);
                         }
                     });
             })
-    );
-});
-
-// Background Sync for Form Submissions
-self.addEventListener('sync', (event) => {
-    if (event.tag === 'sync-breakdowns') {
-        event.waitUntil(syncBreakdowns());
-    }
-});
-
-// Push Notifications
-self.addEventListener('push', (event) => {
-    const options = {
-        body: event.data.text(),
-        icon: '/loco/assets/images/icons/icon-192x192.png',
-        badge: '/loco/assets/images/icons/badge-72x72.png',
-        dir: 'rtl',
-        vibrate: [100, 50, 100],
-        data: {
-            dateOfArrival: Date.now(),
-            primaryKey: 1
-        }
-    };
-
-    event.waitUntil(
-        self.registration.showNotification('سیستم مدیریت خطاها', options)
     );
 });
