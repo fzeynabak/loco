@@ -4,6 +4,11 @@ RewriteEngine On
 # Set base path
 RewriteBase /loco/
 
+# Allow direct access to manifest.json and service-worker.js
+RewriteRule ^(manifest\.json|service-worker\.js)$ $1 [L]
+
+# Allow direct access to assets
+RewriteRule ^assets/ - [L]
 
 # اگر درخواست برای فایل یا دایرکتوری موجود نیست
 RewriteCond %{REQUEST_FILENAME} !-f
@@ -19,6 +24,16 @@ RewriteRule ^(.*)$ index.php?route=$1 [QSA,L]
     Header set X-XSS-Protection "1; mode=block"
     Header set Referrer-Policy "same-origin"
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    
+    # PWA Headers
+    <FilesMatch "manifest\.json$">
+        Header set Content-Type "application/manifest+json"
+    </FilesMatch>
+    
+    <FilesMatch "service-worker\.js$">
+        Header set Service-Worker-Allowed "/"
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
 </IfModule>
 
 # Prevent directory listing
@@ -33,22 +48,13 @@ Options -Indexes
 <FilesMatch "(^#.*#|\.(bak|config|dist|fla|inc|ini|log|psd|sh|sql|sw[op])|~)$">
     Order allow,deny
     Deny from all
-    Deny from all
 </FilesMatch>
-
-
-php_value error_log logs/error.log
 
 # Secure PHP configuration
 php_value session.cookie_httponly 1
 php_value session.cookie_secure 1
 php_value session.use_only_cookies 1
 php_value session.cookie_samesite "Strict"
-
-
-RewriteBase /loco/
-
-
-# تنظیمات PHP
+php_value error_log logs/error.log
 php_value display_errors 1
 php_value error_reporting E_ALL

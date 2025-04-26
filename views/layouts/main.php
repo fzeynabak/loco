@@ -8,13 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0d6efd">
-    <title>سیستم مدیریت خطاهای لوکوموتیو</title>
-    <link rel="manifest" href="<?php echo BASE_URL; ?>/manifest.json">
-    <link rel="icon" type="image/png" sizes="192x192" href="<?php echo BASE_URL; ?>/assets/images/icons/icon-192x192.png">
-
-    <!-- فونت ایران‌سنس -->
+    <title>سیستم مدیریت خطاهای لوکوموتیو</title>    <!-- فونت ایران‌سنس -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     
     <!-- بوت‌استرپ RTL -->
@@ -28,11 +22,24 @@ if (session_status() === PHP_SESSION_NONE) {
     
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-        
+    
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="مدیریت خطاها">
+    <meta name="theme-color" content="#0d6efd">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="مدیریت خطاها">
-    <link rel="apple-touch-icon" href="<?php echo BASE_URL; ?>/assets/images/icons/icon-152x152.png">
+    <meta name="msapplication-TileColor" content="#0d6efd">
+    <meta name="msapplication-config" content="<?php echo BASE_URL; ?>/assets/images/icons/browserconfig.xml">
+
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="<?php echo BASE_URL; ?>/assets/images/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="<?php echo BASE_URL; ?>/assets/images/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="<?php echo BASE_URL; ?>/assets/images/icons/icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="<?php echo BASE_URL; ?>/assets/images/icons/icon-512x512.png">
+    <link rel="manifest" href="<?php echo BASE_URL; ?>/manifest.json">
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
@@ -523,72 +530,141 @@ if (session_status() === PHP_SESSION_NONE) {
         });
     }
 
-    // ذخیره رویداد beforeinstallprompt
-let deferredPrompt;
+    </script>
+    
+        <!-- PWA Installation -->
+    <script>
+    let deferredPrompt;
 
-// نصب PWA
-window.addEventListener('beforeinstallprompt', (e) => {
-    // رویداد پیش‌فرض رو متوقف می‌کنیم
-    e.preventDefault();
-    // رویداد رو ذخیره می‌کنیم
-    deferredPrompt = e;
+    // اگر PWA قبلاً نصب نشده باشد
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // اگر کاربر لاگین کرده باشد
+        if (document.querySelector('.user-menu')) {
+            // نمایش پیام نصب بعد از 3 ثانیه
+            setTimeout(() => {
+                showInstallPrompt();
+            }, 3000);
+        }
+    });
 
-    // نمایش دکمه نصب بعد از 2 ثانیه
-    setTimeout(() => {
-        showInstallPromotion();
-    }, 2000);
-});
+    function showInstallPrompt() {
+        if (!deferredPrompt) return;
 
-// نمایش پیشنهاد نصب
-function showInstallPromotion() {
-    // اگر کاربر احراز هویت شده باشد
-    if (document.querySelector('.user-menu')) {
         Swal.fire({
             title: 'نصب برنامه',
-            text: 'می‌خواهید برنامه را روی دستگاه خود نصب کنید؟',
+            html: `
+                <div class="text-right">
+                    <p>با نصب این برنامه می‌توانید:</p>
+                    <ul class="text-right list-unstyled">
+                        <li><i class="bi bi-check2 text-success me-2"></i>دسترسی سریع‌تر داشته باشید</li>
+                        <li><i class="bi bi-check2 text-success me-2"></i>در حالت آفلاین کار کنید</li>
+                        <li><i class="bi bi-check2 text-success me-2"></i>فضای کمتری اشغال کنید</li>
+                    </ul>
+                </div>
+            `,
             icon: 'info',
             showCancelButton: true,
             confirmButtonText: 'نصب برنامه',
-            cancelButtonText: 'بعداً'
+            cancelButtonText: 'بعداً',
+            allowOutsideClick: false
         }).then((result) => {
-            if (result.isConfirmed && deferredPrompt) {
-                // نمایش پنجره نصب
+            if (result.isConfirmed) {
                 deferredPrompt.prompt();
-                // چک کردن انتخاب کاربر
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
-                        console.log('کاربر برنامه را نصب کرد');
+                        Swal.fire({
+                            title: 'نصب موفق',
+                            text: 'برنامه با موفقیت نصب شد',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
                     }
-                    // در هر صورت متغیر رو خالی می‌کنیم
                     deferredPrompt = null;
                 });
+            } else {
+                // ذخیره زمان رد کردن نصب
+                localStorage.setItem('pwaInstallPromptLastShown', Date.now());
             }
         });
     }
-}
 
-// ثبت Service Worker
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
+    // بررسی آپدیت سرویس ورکر
+    if ('serviceWorker' in navigator) {
+        let refreshing = false;
+
+        // ثبت سرویس ورکر
         navigator.serviceWorker.register('<?php echo BASE_URL; ?>/service-worker.js', {
             scope: '<?php echo BASE_URL; ?>/'
-        })
-        .then((registration) => {
-            console.log('Service Worker registered:', registration);
-        })
-        .catch((error) => {
+        }).then(registration => {
+            console.log('Service Worker registered with scope:', registration.scope);
+
+            // بررسی آپدیت در هر بار لود صفحه
+            registration.update();
+
+            // وقتی سرویس ورکر جدید نصب می‌شود
+            registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                
+                newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        // نمایش پیام آپدیت
+                        Swal.fire({
+                            title: 'به‌روزرسانی',
+                            text: 'نسخه جدیدی از برنامه در دسترس است. می‌خواهید صفحه را به‌روز کنید؟',
+                            icon: 'info',
+                            showCancelButton: true,
+                            confirmButtonText: 'به‌روزرسانی',
+                            cancelButtonText: 'بعداً'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                newWorker.postMessage({ action: 'skipWaiting' });
+                            }
+                        });
+                    }
+                });
+            });
+        }).catch(error => {
             console.error('Service Worker registration failed:', error);
         });
-    });
-}
 
-// اضافه کردن فایل manifest.json به صفحه
-const manifestLink = document.createElement('link');
-manifestLink.rel = 'manifest';
-manifestLink.href = '<?php echo BASE_URL; ?>/manifest.json';
-document.head.appendChild(manifestLink);
+        // وقتی سرویس ورکر کنترل صفحه را به دست می‌گیرد
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) {
+                refreshing = true;
+                window.location.reload();
+            }
+        });
+
+        // هندل کردن وضعیت آفلاین/آنلاین
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+    }
+
+    // آپدیت وضعیت اتصال
+    function updateOnlineStatus() {
+        const status = navigator.onLine ? 'online' : 'offline';
+        
+        if (!navigator.onLine) {
+            Swal.fire({
+                title: 'عدم اتصال به اینترنت',
+                text: 'شما در حالت آفلاین هستید. برخی امکانات محدود خواهند بود.',
+                icon: 'warning',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+        }
+
+        document.body.dataset.connectionStatus = status;
+    }
+
+    // چک کردن وضعیت اولیه
+    updateOnlineStatus();
     </script>
-        <!-- PWA Registration -->
-   
 </body>
 </html>
