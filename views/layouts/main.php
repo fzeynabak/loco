@@ -8,7 +8,9 @@ if (session_status() === PHP_SESSION_NONE) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سیستم مدیریت خطاهای لوکوموتیو</title>    <!-- فونت ایران‌سنس -->
+    <title>سیستم مدیریت خطاهای لوکوموتیو</title>
+    
+    <!-- فونت وزیرمتن -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     
     <!-- بوت‌استرپ RTL -->
@@ -58,12 +60,13 @@ if (session_status() === PHP_SESSION_NONE) {
     }
 
     body {
-    font-family: "Vazirmatn", system-ui, -apple-system, "Segoe UI", sans-serif;
-    background: #f8f9fa;
+        font-family: "Vazirmatn", system-ui, -apple-system, "Segoe UI", sans-serif;
+        background: #f8f9fa;
     }
+
     body.has-header {
-    padding-top: 70px;
-}
+        padding-top: 70px;
+    }
 
     /* متغیرهای CSS */
     :root {
@@ -204,46 +207,6 @@ if (session_status() === PHP_SESSION_NONE) {
         margin: 0 auto;
     }
 
-    /* Cards */
-    .card {
-        border: none;
-        border-radius: var(--border-radius);
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-        transition: all var(--transition-speed) ease;
-    }
-
-    .card:hover {
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-header {
-        background: #fff;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-        padding: 1rem;
-    }
-
-    /* Forms */
-    .form-control:focus,
-    .form-select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-    }
-
-    /* Tables */
-    .table {
-        margin: 0;
-    }
-
-    .table th {
-        font-weight: 600;
-        background: #f8f9fa;
-        border-top: none;
-    }
-
-    .table td {
-        vertical-align: middle;
-    }
-
     /* Mobile Menu */
     @media (max-width: 991.98px) {
         .header-nav {
@@ -255,12 +218,14 @@ if (session_status() === PHP_SESSION_NONE) {
             padding: 1rem;
             box-shadow: var(--header-shadow);
             transform: translateY(-100%);
+            visibility: hidden;
             opacity: 0;
-            transition: all var(--transition-speed) ease;
+            transition: all 0.3s ease;
         }
 
         .header-nav.show {
             transform: translateY(0);
+            visibility: visible;
             opacity: 1;
         }
 
@@ -271,6 +236,21 @@ if (session_status() === PHP_SESSION_NONE) {
 
         .user-menu {
             margin-right: 1rem;
+        }
+
+        .navbar-toggler {
+            padding: 0.5rem;
+            border: none;
+            background: transparent;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+        .navbar-toggler i {
+            font-size: 1.5rem;
+            color: #2c3e50;
         }
     }
 
@@ -288,69 +268,9 @@ if (session_status() === PHP_SESSION_NONE) {
             padding: 1rem;
         }
     }
-
-    /* Profile Page Styles */
-    .profile-card {
-        background: #fff;
-        border-radius: var(--border-radius);
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-        transition: all var(--transition-speed) ease;
-    }
-
-    .profile-card:hover {
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .profile-header {
-        padding: 2rem;
-        text-align: center;
-        background: linear-gradient(45deg, #4A90E2, #67B8F7);
-        color: #fff;
-        border-radius: var(--border-radius) var(--border-radius) 0 0;
-    }
-
-    .profile-avatar {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        margin: 0 auto 1rem;
-        border: 4px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .profile-name {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-
-    .profile-role {
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 0.9rem;
-    }
-
-    .profile-body {
-        padding: 2rem;
-    }
-
-    .profile-section {
-        margin-bottom: 2rem;
-    }
-
-    .profile-section:last-child {
-        margin-bottom: 0;
-    }
-
-    .profile-section-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #e9ecef;
-    }
     </style>
 </head>
-<body>
+<body class="<?php echo is_authenticated() ? 'has-header' : ''; ?>">
     <?php if (is_authenticated()): ?>
     <!-- Header -->
     <header class="main-header">
@@ -364,7 +284,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
                 <!-- Mobile Menu Toggle -->
                 <button class="navbar-toggler border-0 d-lg-none" type="button" onclick="toggleMenu()">
-                    <i class="bi bi-list fs-4"></i>
+                    <i class="bi bi-list"></i>
                 </button>
 
                 <!-- Main Navigation -->
@@ -473,7 +393,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <?php endif; ?>
 
     <!-- Main Content -->
-        <?php if (is_authenticated()): ?>
+    <?php if (is_authenticated()): ?>
         <main class="main-content">
             <?php if (isset($_SESSION['flash_message'])): ?>
                 <div class="alert alert-<?php echo $_SESSION['flash_type']; ?> alert-dismissible fade show" role="alert">
@@ -488,7 +408,6 @@ if (session_status() === PHP_SESSION_NONE) {
     <?php else: ?>
         <?php echo $content ?? ''; ?>
     <?php endif; ?>
-    </main>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -498,8 +417,24 @@ if (session_status() === PHP_SESSION_NONE) {
     <script>
     // Toggle Mobile Menu
     function toggleMenu() {
-        document.getElementById('mainNav').classList.toggle('show');
+        const nav = document.getElementById('mainNav');
+        if (nav) {
+            nav.classList.toggle('show');
+        }
     }
+
+    // بستن منو در موبایل وقتی روی لینک‌ها کلیک می‌شود
+    document.addEventListener('DOMContentLoaded', function() {
+        const navLinks = document.querySelectorAll('.header-nav .nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                const nav = document.getElementById('mainNav');
+                if (nav && window.innerWidth < 992) {
+                    nav.classList.remove('show');
+                }
+            });
+        });
+    });
 
     // Header Scroll Effect
     window.addEventListener('scroll', function() {
@@ -536,10 +471,9 @@ if (session_status() === PHP_SESSION_NONE) {
             }
         });
     }
-
     </script>
     
-        <!-- PWA Installation -->
+    <!-- PWA Installation -->
     <script>
     let deferredPrompt;
 
@@ -593,32 +527,26 @@ if (session_status() === PHP_SESSION_NONE) {
                     deferredPrompt = null;
                 });
             } else {
-                // ذخیره زمان رد کردن نصب
                 localStorage.setItem('pwaInstallPromptLastShown', Date.now());
             }
         });
     }
 
-    // بررسی آپدیت سرویس ورکر
+    // Service Worker
     if ('serviceWorker' in navigator) {
         let refreshing = false;
 
-        // ثبت سرویس ورکر
         navigator.serviceWorker.register('<?php echo BASE_URL; ?>/service-worker.js', {
             scope: '<?php echo BASE_URL; ?>/'
         }).then(registration => {
             console.log('Service Worker registered with scope:', registration.scope);
-
-            // بررسی آپدیت در هر بار لود صفحه
             registration.update();
 
-            // وقتی سرویس ورکر جدید نصب می‌شود
             registration.addEventListener('updatefound', () => {
                 const newWorker = registration.installing;
                 
                 newWorker.addEventListener('statechange', () => {
                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        // نمایش پیام آپدیت
                         Swal.fire({
                             title: 'به‌روزرسانی',
                             text: 'نسخه جدیدی از برنامه در دسترس است. می‌خواهید صفحه را به‌روز کنید؟',
@@ -638,7 +566,6 @@ if (session_status() === PHP_SESSION_NONE) {
             console.error('Service Worker registration failed:', error);
         });
 
-        // وقتی سرویس ورکر کنترل صفحه را به دست می‌گیرد
         navigator.serviceWorker.addEventListener('controllerchange', () => {
             if (!refreshing) {
                 refreshing = true;
@@ -646,12 +573,10 @@ if (session_status() === PHP_SESSION_NONE) {
             }
         });
 
-        // هندل کردن وضعیت آفلاین/آنلاین
         window.addEventListener('online', updateOnlineStatus);
         window.addEventListener('offline', updateOnlineStatus);
     }
 
-    // آپدیت وضعیت اتصال
     function updateOnlineStatus() {
         const status = navigator.onLine ? 'online' : 'offline';
         
@@ -670,7 +595,6 @@ if (session_status() === PHP_SESSION_NONE) {
         document.body.dataset.connectionStatus = status;
     }
 
-    // چک کردن وضعیت اولیه
     updateOnlineStatus();
     </script>
 </body>
