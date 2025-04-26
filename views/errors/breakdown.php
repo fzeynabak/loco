@@ -17,6 +17,13 @@
                             مکان و زمان خرابی
                         </h6>
                     </div>
+
+                    <!-- نقشه ریلی -->
+                    <div class="col-12 mb-4">
+                        <div id="railwayMap" style="height: 400px; border-radius: 8px;"></div>
+                        <input type="hidden" id="selected_location" name="selected_location">
+                    </div>
+
                     <div class="col-md-3">
                         <div class="mb-3">
                             <label class="form-label">استان <span class="text-danger">*</span></label>
@@ -31,6 +38,7 @@
                             <div class="invalid-feedback">لطفاً استان را انتخاب کنید</div>
                         </div>
                     </div>
+                    
                     <div class="col-md-3">
                         <div class="mb-3">
                             <label class="form-label">شهر <span class="text-danger">*</span></label>
@@ -40,6 +48,7 @@
                             <div class="invalid-feedback">لطفاً شهر را انتخاب کنید</div>
                         </div>
                     </div>
+
                     <div class="col-md-3">
                         <div class="mb-3">
                             <label class="form-label">ایستگاه <span class="text-danger">*</span></label>
@@ -49,13 +58,21 @@
                             <div class="invalid-feedback">لطفاً ایستگاه را انتخاب کنید</div>
                         </div>
                     </div>
+
                     <div class="col-md-3">
                         <div class="mb-3">
                             <label class="form-label">تاریخ و ساعت <span class="text-danger">*</span></label>
-                            <input type="text" name="occurrence_date" id="occurrence_date" 
-                                   class="form-control" required 
-                                   placeholder="مثال: 1402/12/29 14:30"
-                                   pattern="\d{4}/\d{2}/\d{2} \d{2}:\d{2}">
+                            <div class="input-group">
+                                <input type="text" 
+                                       name="occurrence_date" 
+                                       id="occurrence_date" 
+                                       class="form-control" 
+                                       required 
+                                       data-jdp
+                                       autocomplete="off"
+                                       placeholder="انتخاب کنید">
+                                <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                            </div>
                             <div class="invalid-feedback">لطفاً تاریخ و ساعت را به فرمت صحیح وارد کنید</div>
                         </div>
                     </div>
@@ -94,8 +111,11 @@
                     <div class="col-md-4">
                         <div class="mb-3">
                             <label class="form-label">کیلومتراژ فعلی</label>
-                            <input type="number" name="current_mileage" class="form-control" 
-                                   min="0" step="1" placeholder="به کیلومتر">
+                            <div class="input-group">
+                                <input type="number" name="current_mileage" class="form-control" 
+                                       min="0" step="1" placeholder="به کیلومتر">
+                                <span class="input-group-text">کیلومتر</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -143,39 +163,28 @@
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label class="form-label">تصاویر</label>
-                            <input type="file" name="images[]" class="form-control" multiple
-                                   accept="image/jpeg,image/png,image/gif">
-                            <div class="form-text">
-                                حداکثر 5 تصویر با فرمت JPG، PNG یا GIF (هر تصویر حداکثر 2MB)
-                            </div>
+                            <label class="form-label">تصاویر خرابی</label>
+                            <input type="file" name="images[]" class="form-control" accept="image/*" multiple
+                                   data-max-files="5">
+                            <div class="form-text">حداکثر 5 تصویر، هر تصویر حداکثر 2 مگابایت</div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label class="form-label">فیلم</label>
-                            <input type="file" name="videos[]" class="form-control" multiple
-                                   accept="video/mp4,video/webm">
-                            <div class="form-text">
-                                حداکثر 2 فیلم با فرمت MP4 یا WebM (هر فیلم حداکثر 50MB)
-                            </div>
+                            <label class="form-label">فایل‌های پیوست</label>
+                            <input type="file" name="attachments[]" class="form-control" multiple
+                                   data-max-files="2">
+                            <div class="form-text">حداکثر 2 فایل، هر فایل حداکثر 5 مگابایت</div>
                         </div>
                     </div>
                 </div>
 
-                <hr class="my-4">
-
-                <!-- دکمه‌های فرم -->
-                <div class="row">
+                <div class="row mt-4">
                     <div class="col-12">
                         <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-save me-1"></i>
-                            ثبت گزارش خرابی
+                            <i class="bi bi-check2-circle me-2"></i>
+                            ثبت گزارش
                         </button>
-                        <a href="<?php echo BASE_URL; ?>/errors" class="btn btn-secondary me-2">
-                            <i class="bi bi-x-circle me-1"></i>
-                            انصراف
-                        </a>
                     </div>
                 </div>
             </form>
@@ -183,76 +192,112 @@
     </div>
 </div>
 
-<!-- استایل‌های اختصاصی -->
 <style>
-.section-title {
-    color: #2c3345;
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #e9ecef;
+/* استایل‌های اضافی برای PWA و موبایل */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 0.5rem;
+    }
+    
+    #railwayMap {
+        height: 300px !important;
+    }
+    
+    .card {
+        border-radius: 0;
+        box-shadow: none;
+    }
+    
+    .form-control, .form-select {
+        font-size: 16px; /* برای جلوگیری از زوم خودکار در iOS */
+    }
 }
 
-.form-label {
-    font-weight: 500;
-    color: #2c3345;
-}
-
+/* Custom styles for select2 */
 .select2-container--default .select2-selection--single {
-    border: 1px solid #dee2e6;
-    border-radius: var(--border-radius);
     height: 38px;
-    padding: 0.375rem 0.75rem;
+    border-color: #dee2e6;
+    border-radius: 0.375rem;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 36px;
+    padding-right: 12px;
+    padding-left: 12px;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow {
     height: 36px;
 }
 
-/* فایل آپلود */
-.custom-file-input::-webkit-file-upload-button {
-    visibility: hidden;
+/* استایل برای نقشه */
+.leaflet-container {
+    font-family: inherit !important;
 }
 
-.custom-file-input::before {
-    content: 'انتخاب فایل';
-    display: inline-block;
-    background: linear-gradient(top, #f9f9f9, #e3e3e3);
-    border: 1px solid #999;
-    border-radius: 3px;
-    padding: 5px 8px;
-    outline: none;
-    white-space: nowrap;
-    cursor: pointer;
-    text-shadow: 1px 1px #fff;
-    font-weight: 700;
-    font-size: 10pt;
+.station-marker {
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
 
-.custom-file-input:hover::before {
-    border-color: black;
+.station-marker.active {
+    border-color: #0d6efd;
+    animation: pulse 1.5s infinite;
 }
 
-.custom-file-input:active::before {
-    background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(13, 110, 253, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0); }
 }
 </style>
 
-<!-- اسکریپت‌های اختصاصی -->
 <script>
-$(document).ready(function() {
-    // راه‌اندازی Select2
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize select2
     $('.select2').select2({
         theme: 'bootstrap-5',
-        dir: 'rtl'
+        width: '100%'
     });
 
-    // لود شهرها بر اساس استان
+    // Initialize Persian Datepicker
+    $('#occurrence_date').persianDatepicker({
+        format: 'YYYY/MM/DD HH:mm:ss',
+        initialValueType: 'gregorian',
+        autoClose: true,
+        toolbox: {
+            calendarSwitch: {
+                enabled: false
+            }
+        },
+        timePicker: {
+            enabled: true,
+            meridian: {
+                enabled: false
+            }
+        },
+        onSelect: function(unix) {
+            $('#occurrence_date').trigger('input');
+        },
+        responsive: true
+    });
+
+    // Initialize map
+    const map = L.map('railwayMap').setView([32.4279, 53.6880], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // نمایش ایستگاه‌ها روی نقشه
+    let stations = [];
+    let markers = {};
+
+    // لود استان‌ها
     $('#province').on('change', function() {
         const provinceId = $(this).val();
         if (provinceId) {
-            $.get(`<?php echo BASE_URL; ?>/api/cities/${provinceId}`, function(cities) {
+            $.get(`${BASE_URL}/api/cities/${provinceId}`, function(cities) {
                 let options = '<option value="">انتخاب کنید</option>';
                 cities.forEach(city => {
                     options += `<option value="${city.id}">${city.name}</option>`;
@@ -264,73 +309,137 @@ $(document).ready(function() {
         }
     });
 
-    // لود ایستگاه‌ها بر اساس شهر
+    // لود ایستگاه‌ها
     $('#city').on('change', function() {
         const cityId = $(this).val();
         if (cityId) {
-            $.get(`<?php echo BASE_URL; ?>/api/stations/${cityId}`, function(stations) {
+            $.get(`${BASE_URL}/api/stations/${cityId}`, function(data) {
+                stations = data;
                 let options = '<option value="">انتخاب کنید</option>';
+                
+                // حذف مارکرهای قبلی
+                Object.values(markers).forEach(marker => map.removeLayer(marker));
+                markers = {};
+
+                // اضافه کردن ایستگاه‌ها به سلکت باکس و نقشه
                 stations.forEach(station => {
                     options += `<option value="${station.id}">${station.name}</option>`;
+                    
+                    if (station.lat && station.lng) {
+                        const marker = L.marker([station.lat, station.lng], {
+                            icon: L.divIcon({
+                                className: 'station-marker',
+                                html: `<div style="width: 12px; height: 12px; background-color: #dc3545;"></div>`,
+                                iconSize: [12, 12]
+                            })
+                        }).addTo(map);
+
+                        marker.bindPopup(station.name);
+                        markers[station.id] = marker;
+                        
+                        marker.on('click', function() {
+                            $('#station').val(station.id).trigger('change');
+                        });
+                    }
                 });
+
                 $('#station').html(options).trigger('change');
+                
+                // اگر ایستگاهی وجود دارد، نقشه را روی آنها زوم کند
+                if (stations.length > 0) {
+                    const bounds = [];
+                    stations.forEach(station => {
+                        if (station.lat && station.lng) {
+                            bounds.push([station.lat, station.lng]);
+                        }
+                    });
+                    if (bounds.length > 0) {
+                        map.fitBounds(bounds, { padding: [50, 50] });
+                    }
+                }
             });
         } else {
             $('#station').html('<option value="">ابتدا شهر را انتخاب کنید</option>').trigger('change');
+            Object.values(markers).forEach(marker => map.removeLayer(marker));
+            markers = {};
         }
     });
 
-    // تنظیم DateTimePicker برای تاریخ و ساعت
-    $('#occurrence_date').persianDatepicker({
-        format: 'YYYY/MM/DD HH:mm',
-        timePicker: {
-            enabled: true,
-            meridiem: {
-                enabled: false
+    // انتخاب ایستگاه
+    $('#station').on('change', function() {
+        const stationId = $(this).val();
+        
+        // حذف کلاس active از همه مارکرها
+        Object.values(markers).forEach(marker => {
+            marker.getElement().querySelector('div').classList.remove('active');
+        });
+        
+        if (stationId && markers[stationId]) {
+            const marker = markers[stationId];
+            marker.getElement().querySelector('div').classList.add('active');
+            marker.openPopup();
+            
+            const station = stations.find(s => s.id === stationId);
+            if (station && station.lat && station.lng) {
+                map.setView([station.lat, station.lng], 13);
+                $('#selected_location').val(`${station.lat},${station.lng}`);
             }
-        },
-        initialValue: false,
-        autoClose: true,
-        onlyTimePicker: false,
-        onSelect: function() {
-            $('#occurrence_date').trigger('input');
         }
     });
+
+    // Form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            // نمایش پیام خطا
+            Swal.fire({
+                icon: 'error',
+                title: 'خطا!',
+                text: 'لطفاً تمام فیلدهای الزامی را پر کنید',
+                confirmButtonText: 'باشه'
+            });
+        }
+        form.classList.add('was-validated');
+    }, false);
 
     // اعتبارسنجی فایل‌ها
-    $('input[type="file"]').on('change', function() {
-        const files = this.files;
-        const maxFiles = $(this).attr('name') === 'images[]' ? 5 : 2;
-        const maxSize = $(this).attr('name') === 'images[]' ? 2 * 1024 * 1024 : 50 * 1024 * 1024;
-        
-        if (files.length > maxFiles) {
-            alert(`حداکثر ${maxFiles} فایل می‌توانید انتخاب کنید`);
-            this.value = '';
-            return;
-        }
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.addEventListener('change', function() {
+            const files = this.files;
+            const maxFiles = this.dataset.maxFiles;
+            const maxSize = this.name === 'images[]' ? 2 : 5; // مگابایت
 
-        for (let i = 0; i < files.length; i++) {
-            if (files[i].size > maxSize) {
-                alert(`حجم فایل ${files[i].name} بیشتر از حد مجاز است`);
+            if (files.length > maxFiles) {
                 this.value = '';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطا!',
+                    text: `حداکثر تعداد فایل مجاز ${maxFiles} عدد است`,
+                    confirmButtonText: 'باشه'
+                });
                 return;
             }
-        }
+
+            for (let file of files) {
+                if (file.size > maxSize * 1024 * 1024) {
+                    this.value = '';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'خطا!',
+                        text: `حجم هر فایل نباید بیشتر از ${maxSize} مگابایت باشد`,
+                        confirmButtonText: 'باشه'
+                    });
+                    break;
+                }
+            }
+        });
     });
 
-    // اعتبارسنجی فرم
-    (function () {
-        'use strict'
-        const form = document.querySelector('.needs-validation');
-        
-        form.addEventListener('submit', function (event) {
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            form.classList.add('was-validated');
-        }, false);
-    })();
+    // نمایش پیام‌های فلش
+    <?php show_flash_message(); ?>
 });
 </script>
 

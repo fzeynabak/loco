@@ -9,7 +9,11 @@ if (session_status() === PHP_SESSION_NONE) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سیستم مدیریت خطاهای لوکوموتیو</title>
-    
+    <!-- Add these lines to your header.php -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/plugins/persian-datepicker/persian-datepicker.min.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/plugins/leaflet/leaflet.css">
+    <script src="<?php echo BASE_URL; ?>assets/plugins/persian-datepicker/persian-datepicker.min.js"></script>
+    <script src="<?php echo BASE_URL; ?>assets/plugins/leaflet/leaflet.js"></script>
     <!-- فونت ایران‌سنس -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     
