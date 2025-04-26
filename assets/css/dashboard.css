@@ -1,0 +1,141 @@
+/* رنگ‌های شاد برای کارت‌ها */
+:root {
+    --primary-gradient: linear-gradient(45deg, #4A90E2, #67B8F7);
+    --success-gradient: linear-gradient(45deg, #4CAF50, #8BC34A);
+    --warning-gradient: linear-gradient(45deg, #F9A825, #FFB74D);
+    --danger-gradient: linear-gradient(45deg, #F44336, #FF5722);
+    --info-gradient: linear-gradient(45deg, #2196F3, #03A9F4);
+    --purple-gradient: linear-gradient(45deg, #9C27B0, #673AB7);
+}
+
+/* استایل‌های داشبورد */
+.stat-card {
+    transition: transform 0.2s ease-in-out;
+    border-radius: 15px;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card .card-body {
+    padding: 1.5rem;
+    color: white;
+}
+
+.stat-card .icon-wrapper {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+}
+
+.stat-card .stat-label {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.stat-card .view-all {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.stat-card .view-all:hover {
+    color: white;
+}
+
+/* جدول خطاها */
+.errors-table {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.errors-table .card-header {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    padding: 1.25rem;
+}
+
+.errors-table .table {
+    margin: 0;
+}
+
+.errors-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    border-top: none;
+}
+
+.errors-table td {
+    vertical-align: middle;
+}
+
+.errors-table .badge {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+/* نمودار وضعیت */
+.status-card {
+    border-radius: 15px;
+}
+
+.status-card .card-header {
+    background: var(--info-gradient);
+    color: white;
+    border: none;
+    padding: 1.25rem;
+}
+
+.status-card .progress {
+    height: 10px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+}
+
+.status-card .progress-bar {
+    border-radius: 5px;
+}
+
+/* انیمیشن‌های ورود */
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.row > div {
+    animation: slideIn 0.3s ease-out forwards;
+}
+
+.row > div:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.row > div:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.row > div:nth-child(4) {
+    animation-delay: 0.3s;
+}

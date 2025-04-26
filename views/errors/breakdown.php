@@ -60,20 +60,37 @@
 
                     <div class="col-md-3">
                         <div class="mb-3">
-                            <label class="form-label">تاریخ و ساعت <span class="text-danger">*</span></label>
-                            <input type="text" 
-                                name="occurrence_date" 
-                                id="occurrence_date" 
-                                data-jdp 
-                                class="form-control" 
-                                placeholder="انتخاب کنید" 
-                                required 
-                                autocomplete="off">
-                            <div class="invalid-feedback">لطفاً تاریخ و ساعت را به فرمت صحیح وارد کنید</div>
+                            <label class="form-label">تاریخ <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="text" 
+                                    name="occurrence_date" 
+                                    id="occurrence_date" 
+                                    class="form-control" 
+                                    required 
+                                    data-jdp
+                                    autocomplete="off"
+                                    placeholder="انتخاب کنید">
+                                <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label">ساعت <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="text" 
+                                    name="occurrence_time" 
+                                    id="occurrence_time" 
+                                    class="form-control" 
+                                    required 
+                                    pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
+                                    placeholder="مثال: 14:30">
+                                <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                            </div>
+                            <div class="invalid-feedback">لطفاً ساعت را به فرمت صحیح وارد کنید (مثال: 14:30)</div>
                         </div>
                     </div>
                 </div>
-        <input type="hidden" id="occurrence_date_alt" name="occurrence_date_timestamp">
 
                 <!-- اطلاعات لوکوموتیو -->
                 <div class="row mb-4">
@@ -248,6 +265,77 @@
     70% { box-shadow: 0 0 0 10px rgba(13, 110, 253, 0); }
     100% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0); }
 }
+/* استایل نقشه */
+#railwayMap {
+    width: 100%;
+    height: 400px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+}
+
+/* استایل مسیرهای راه آهن */
+.railway-line {
+    stroke-dasharray: 2, 10;
+    animation: dash 20s linear infinite;
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: -1000;
+    }
+}
+
+/* استایل نقاط ایستگاه */
+.station-marker {
+    background: transparent;
+}
+
+.station-point {
+    width: 100%;
+    height: 100%;
+    background: #3498db;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+
+.station-marker.active .station-point {
+    background: #e74c3c;
+    transform: scale(1.2);
+}
+
+/* استایل پاپ‌آپ ایستگاه */
+.station-popup {
+    text-align: right;
+    direction: rtl;
+    padding: 5px;
+}
+
+/* استایل Select2 */
+.select2-container--default .select2-selection--single {
+    height: 38px;
+    border-color: #dee2e6;
+    border-radius: 0.375rem;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 36px;
+    padding-right: 12px;
+    padding-left: 12px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px;
+}
+
+/* استایل‌های موبایل */
+@media (max-width: 768px) {
+    #railwayMap {
+        height: 300px;
+    }
+}
 </style>
 
 <!-- تعریف متغیر BASE_URL برای استفاده در اسکریپت -->
@@ -256,183 +344,7 @@
 </script>
 // جایگزین کردن اسکریپت قبلی با این کد
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // تنظیمات تاریخ
-    let selectedDate = null;
-    
-    // ایجاد تقویم شمسی با استفاده از persianDatepicker
-    $('#occurrence_date').persianDatepicker({
-        format: 'YYYY/MM/DD',
-        initialValue: false,
-        autoClose: true,
-        toolbox: {
-            calendarSwitch: {
-                enabled: false
-            }
-        },
-        dayPicker: {
-            onSelect: function(unix) {
-                selectedDate = unix;
-                updateTimestamp();
-            }
-        },
-        observer: true,
-        onSelect: function(unix) {
-            selectedDate = unix;
-            updateTimestamp();
-        }
-    });
 
-    // مدیریت ورودی ساعت
-    const timeInput = document.getElementById('occurrence_time');
-    timeInput.addEventListener('input', function(e) {
-        let value = e.target.value;
-        
-        // اضافه کردن : بعد از ساعت
-        if (value.length === 2 && !value.includes(':')) {
-            value += ':';
-            e.target.value = value;
-        }
-        
-        // اعتبارسنجی فرمت ساعت
-        if (value.length === 5) {
-            const [hours, minutes] = value.split(':');
-            if (hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60) {
-                updateTimestamp();
-            }
-        }
-    });
-
-    // آپدیت timestamp
-    function updateTimestamp() {
-        if (selectedDate && timeInput.value) {
-            const [hours, minutes] = timeInput.value.split(':');
-            const date = new persianDate(selectedDate);
-            date.hour(parseInt(hours));
-            date.minute(parseInt(minutes));
-            document.getElementById('occurrence_timestamp').value = date.unix();
-        }
-    }
-
-    // تنظیمات نقشه
-    const map = L.map('railwayMap').setView([35.6892, 51.3890], 6);
-    
-    // اضافه کردن لایه نقشه
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    // آرایه برای نگهداری مارکرها
-    let markers = [];
-    let railwayPath = null;
-    let selectedMarker = null;
-
-    // لود مسیرهای ریلی
-    fetch(BASE_URL + '/assets/plugins/iran-cities/list-railway.json')
-        .then(response => response.json())
-        .then(railways => {
-            Object.values(railways).forEach(route => {
-                const coordinates = [];
-                route.stations.forEach(station => {
-                    // اضافه کردن مختصات هر ایستگاه
-                    const stationCoords = getStationCoordinates(station.name);
-                    if (stationCoords) {
-                        coordinates.push(stationCoords);
-                        
-                        // ایجاد مارکر برای هر ایستگاه
-                        const marker = L.marker(stationCoords, {
-                            icon: L.divIcon({
-                                className: 'station-marker',
-                                html: `<div class="marker-pin"></div>`,
-                                iconSize: [30, 30],
-                                iconAnchor: [15, 15]
-                            })
-                        })
-                        .bindPopup(station.name)
-                        .addTo(map);
-                        
-                        markers.push(marker);
-                    }
-                });
-
-                // رسم خط ریلی بین ایستگاه‌ها
-                if (coordinates.length > 1) {
-                    railwayPath = L.polyline(coordinates, {
-                        color: '#2563eb',
-                        weight: 3,
-                        opacity: 0.8
-                    }).addTo(map);
-                }
-            });
-
-            // تنظیم zoom به اندازه مناسب
-            if (railwayPath) {
-                map.fitBounds(railwayPath.getBounds());
-            }
-        })
-        .catch(error => console.error('خطا در لود مسیرهای ریلی:', error));
-
-    // تابع برای گرفتن مختصات ایستگاه‌ها
-    function getStationCoordinates(stationName) {
-        // مختصات ایستگاه‌های اصلی (به عنوان مثال)
-        const coordinates = {
-            'تهران': [35.6892, 51.3890],
-            'گرمسار': [35.2182, 52.3409],
-            'سمنان': [35.2282, 53.3915],
-            'دامغان': [36.1680, 54.3480],
-            'شاهرود': [36.4182, 54.9763],
-            'میامی': [36.4097, 55.6542],
-            'سبزوار': [36.2152, 57.6678],
-            'نیشابور': [36.2146, 58.7958],
-            'مشهد': [36.2605, 59.6168]
-        };
-        return coordinates[stationName];
-    }
-
-    // اضافه کردن قابلیت کلیک روی مسیر برای انتخاب محل خرابی
-    map.on('click', function(e) {
-        // حذف مارکر قبلی اگر وجود داشته باشد
-        if (selectedMarker) {
-            map.removeLayer(selectedMarker);
-        }
-
-        // ایجاد مارکر جدید
-        selectedMarker = L.marker(e.latlng, {
-            icon: L.divIcon({
-                className: 'breakdown-marker',
-                html: '<div class="marker-pin breakdown"></div>',
-                iconSize: [30, 30],
-                iconAnchor: [15, 15]
-            })
-        }).addTo(map);
-
-        // ذخیره موقعیت در input مخفی
-        document.getElementById('selected_location').value = `${e.latlng.lat},${e.latlng.lng}`;
-    });
-
-    // اضافه کردن استایل برای مارکرها
-    const style = document.createElement('style');
-    style.textContent = `
-        .marker-pin {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #2563eb;
-            border: 2px solid #fff;
-            box-shadow: 0 0 4px rgba(0,0,0,0.3);
-        }
-        .marker-pin.breakdown {
-            background: #dc2626;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-    `;
-    document.head.appendChild(style);
-});
 </script>
 
 <?php require_once 'views/layouts/footer.php'; ?>
