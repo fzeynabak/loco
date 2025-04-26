@@ -255,146 +255,130 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize select2
+    // ذخیره دیتای فایل‌های JSON
+    let provinces = [];
+    let cities = [];
+    let railways = {};
+
+    // لود فایل JSON استان‌ها
+    fetch('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/ostan.json')
+        .then(response => response.json())
+        .then(data => {
+            provinces = data;
+            // آپدیت سلکت باکس استان‌ها
+            const provinceSelect = document.getElementById('province');
+            provinceSelect.innerHTML = '<option value="">انتخاب کنید</option>';
+            provinces.forEach(province => {
+                provinceSelect.add(new Option(province.name, province.id));
+            });
+        })
+        .catch(error => console.error('Error loading provinces:', error));
+
+    // لود فایل JSON شهرها
+    fetch('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/shahr.json')
+        .then(response => response.json())
+        .then(data => {
+            cities = data;
+        })
+        .catch(error => console.error('Error loading cities:', error));
+
+    // لود فایل JSON ایستگاه‌ها
+    fetch('<?php echo BASE_URL; ?>/assets/plugins/iran-cities/list-railway.json')
+        .then(response => response.json())
+        .then(data => {
+            railways = data;
+        })
+        .catch(error => console.error('Error loading railway stations:', error));
+
+    // تنظیمات Select2
     $('.select2').select2({
         theme: 'bootstrap-5',
-        width: '100%'
+        width: '100%',
+        language: {
+            noResults: function() {
+                return "نتیجه‌ای یافت نشد";
+            }
+        }
     });
 
-    // Initialize Persian Datepicker
+    // تنظیمات PersianDatepicker
     $('#occurrence_date').persianDatepicker({
-        format: 'YYYY/MM/DD HH:mm:ss',
-        initialValueType: 'gregorian',
-        autoClose: true,
-        toolbox: {
-            calendarSwitch: {
-                enabled: false
-            }
-        },
+        initialValue: false,
+        format: 'YYYY/MM/DD HH:mm',
+        altField: '#occurrence_date_alt',
         timePicker: {
             enabled: true,
             meridian: {
                 enabled: false
             }
         },
+        autoClose: true,
         onSelect: function(unix) {
             $('#occurrence_date').trigger('input');
         },
+        navigator: {
+            scroll: {
+                enabled: false
+            }
+        },
+        toolbox: {
+            calendarSwitch: {
+                enabled: false
+            }
+        },
+        onlyTimePicker: false,
         responsive: true
     });
 
-    // Initialize map
-    const map = L.map('railwayMap').setView([32.4279, 53.6880], 5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    // نمایش ایستگاه‌ها روی نقشه
-    let stations = [];
-    let markers = {};
-
-    // لود استان‌ها
+    // لود شهرها بر اساس استان
     $('#province').on('change', function() {
-        const provinceId = $(this).val();
-        if (provinceId) {
-            $.get(`${BASE_URL}/api/cities/${provinceId}`, function(cities) {
-                let options = '<option value="">انتخاب کنید</option>';
-                cities.forEach(city => {
-                    options += `<option value="${city.id}">${city.name}</option>`;
-                });
-                $('#city').html(options).trigger('change');
+        const provinceId = parseInt($(this).val());
+        const citySelect = $('#city');
+        citySelect.empty().append('<option value="">انتخاب کنید</option>');
+        
+        if (provinceId && cities.length > 0) {
+            // فیلتر شهرهای استان انتخاب شده
+            const provinceCities = cities.filter(city => city.ostan === provinceId);
+            provinceCities.forEach(city => {
+                citySelect.append(new Option(city.name, city.id));
             });
-        } else {
-            $('#city').html('<option value="">ابتدا استان را انتخاب کنید</option>').trigger('change');
         }
+        
+        citySelect.trigger('change');
     });
 
-    // لود ایستگاه‌ها
+    // لود ایستگاه‌ها بر اساس شهر
     $('#city').on('change', function() {
-        const cityId = $(this).val();
-        if (cityId) {
-            $.get(`${BASE_URL}/api/stations/${cityId}`, function(data) {
-                stations = data;
-                let options = '<option value="">انتخاب کنید</option>';
-                
-                // حذف مارکرهای قبلی
-                Object.values(markers).forEach(marker => map.removeLayer(marker));
-                markers = {};
-
-                // اضافه کردن ایستگاه‌ها به سلکت باکس و نقشه
-                stations.forEach(station => {
-                    options += `<option value="${station.id}">${station.name}</option>`;
-                    
-                    if (station.lat && station.lng) {
-                        const marker = L.marker([station.lat, station.lng], {
-                            icon: L.divIcon({
-                                className: 'station-marker',
-                                html: `<div style="width: 12px; height: 12px; background-color: #dc3545;"></div>`,
-                                iconSize: [12, 12]
-                            })
-                        }).addTo(map);
-
-                        marker.bindPopup(station.name);
-                        markers[station.id] = marker;
-                        
-                        marker.on('click', function() {
-                            $('#station').val(station.id).trigger('change');
-                        });
-                    }
-                });
-
-                $('#station').html(options).trigger('change');
-                
-                // اگر ایستگاهی وجود دارد، نقشه را روی آنها زوم کند
-                if (stations.length > 0) {
-                    const bounds = [];
-                    stations.forEach(station => {
-                        if (station.lat && station.lng) {
-                            bounds.push([station.lat, station.lng]);
+        const cityId = parseInt($(this).val());
+        const stationSelect = $('#station');
+        stationSelect.empty().append('<option value="">انتخاب کنید</option>');
+        
+        if (cityId && cities.length > 0 && Object.keys(railways).length > 0) {
+            const selectedCity = cities.find(c => c.id === cityId);
+            if (selectedCity) {
+                Object.values(railways).forEach(route => {
+                    route.stations.forEach(station => {
+                        if (station.city === selectedCity.name) {
+                            const option = new Option(station.name, station.id);
+                            if (!Array.from(stationSelect.options).some(opt => opt.text === station.name)) {
+                                stationSelect.add(option);
+                            }
                         }
                     });
-                    if (bounds.length > 0) {
-                        map.fitBounds(bounds, { padding: [50, 50] });
-                    }
-                }
-            });
-        } else {
-            $('#station').html('<option value="">ابتدا شهر را انتخاب کنید</option>').trigger('change');
-            Object.values(markers).forEach(marker => map.removeLayer(marker));
-            markers = {};
-        }
-    });
-
-    // انتخاب ایستگاه
-    $('#station').on('change', function() {
-        const stationId = $(this).val();
-        
-        // حذف کلاس active از همه مارکرها
-        Object.values(markers).forEach(marker => {
-            marker.getElement().querySelector('div').classList.remove('active');
-        });
-        
-        if (stationId && markers[stationId]) {
-            const marker = markers[stationId];
-            marker.getElement().querySelector('div').classList.add('active');
-            marker.openPopup();
-            
-            const station = stations.find(s => s.id === stationId);
-            if (station && station.lat && station.lng) {
-                map.setView([station.lat, station.lng], 13);
-                $('#selected_location').val(`${station.lat},${station.lng}`);
+                });
             }
         }
+        
+        stationSelect.trigger('change');
     });
 
-    // Form validation
+    // اعتبارسنجی فرم
     const form = document.querySelector('form');
     form.addEventListener('submit', function(event) {
         if (!form.checkValidity()) {
             event.preventDefault();
             event.stopPropagation();
             
-            // نمایش پیام خطا
             Swal.fire({
                 icon: 'error',
                 title: 'خطا!',
@@ -409,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('input[type="file"]').forEach(input => {
         input.addEventListener('change', function() {
             const files = this.files;
-            const maxFiles = this.dataset.maxFiles;
+            const maxFiles = parseInt(this.dataset.maxFiles);
             const maxSize = this.name === 'images[]' ? 2 : 5; // مگابایت
 
             if (files.length > maxFiles) {
@@ -437,10 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-
-    // نمایش پیام‌های فلش
-    <?php show_flash_message(); ?>
 });
 </script>
-
+<script src="<?php echo BASE_URL; ?>/assets/js/breakdown.js"></script>
 <?php require_once 'views/layouts/footer.php'; ?>
