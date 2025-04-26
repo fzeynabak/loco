@@ -8,8 +8,12 @@ if (session_status() === PHP_SESSION_NONE) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0d6efd">
     <title>سیستم مدیریت خطاهای لوکوموتیو</title>
-    
+    <link rel="manifest" href="<?php echo BASE_URL; ?>/manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="<?php echo BASE_URL; ?>/assets/images/icons/icon-192x192.png">
+
     <!-- فونت ایران‌سنس -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     
@@ -24,8 +28,7 @@ if (session_status() === PHP_SESSION_NONE) {
     
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-        <link rel="manifest" href="<?php echo BASE_URL; ?>/manifest.json">
-    <meta name="theme-color" content="#0d6efd">
+        
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="مدیریت خطاها">
@@ -519,51 +522,73 @@ if (session_status() === PHP_SESSION_NONE) {
             }
         });
     }
-    </script>
-        <!-- PWA Registration -->
-   <script>
-        // PWA Registration
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('<?php echo BASE_URL; ?>/service-worker.js')
-                    .then((registration) => {
-                        console.log('Service Worker registered:', registration);
-                    })
-                    .catch((error) => {
-                        console.log('Service Worker registration failed:', error);
-                    });
-            });
-        }
 
-        // Toggle Mobile Menu - اصلاح خطای classList
-        function toggleMenu() {
-            const mainNav = document.getElementById('mainNav');
-            if (mainNav) {
-                mainNav.classList.toggle('show');
-            }
-        }
+    // ذخیره رویداد beforeinstallprompt
+let deferredPrompt;
 
-        // Header Scroll Effect - اصلاح خطای classList
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('.main-header');
-            if (header) {
-                if (window.scrollY > 10) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                }
-            }
-        });
+// نصب PWA
+window.addEventListener('beforeinstallprompt', (e) => {
+    // رویداد پیش‌فرض رو متوقف می‌کنیم
+    e.preventDefault();
+    // رویداد رو ذخیره می‌کنیم
+    deferredPrompt = e;
 
-        // Initialize Select2
-        $(document).ready(function() {
-            if ($.fn.select2) {
-                $('.select2').select2({
-                    dir: 'rtl',
-                    width: '100%'
+    // نمایش دکمه نصب بعد از 2 ثانیه
+    setTimeout(() => {
+        showInstallPromotion();
+    }, 2000);
+});
+
+// نمایش پیشنهاد نصب
+function showInstallPromotion() {
+    // اگر کاربر احراز هویت شده باشد
+    if (document.querySelector('.user-menu')) {
+        Swal.fire({
+            title: 'نصب برنامه',
+            text: 'می‌خواهید برنامه را روی دستگاه خود نصب کنید؟',
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'نصب برنامه',
+            cancelButtonText: 'بعداً'
+        }).then((result) => {
+            if (result.isConfirmed && deferredPrompt) {
+                // نمایش پنجره نصب
+                deferredPrompt.prompt();
+                // چک کردن انتخاب کاربر
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('کاربر برنامه را نصب کرد');
+                    }
+                    // در هر صورت متغیر رو خالی می‌کنیم
+                    deferredPrompt = null;
                 });
             }
         });
+    }
+}
+
+// ثبت Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('<?php echo BASE_URL; ?>/service-worker.js', {
+            scope: '<?php echo BASE_URL; ?>/'
+        })
+        .then((registration) => {
+            console.log('Service Worker registered:', registration);
+        })
+        .catch((error) => {
+            console.error('Service Worker registration failed:', error);
+        });
+    });
+}
+
+// اضافه کردن فایل manifest.json به صفحه
+const manifestLink = document.createElement('link');
+manifestLink.rel = 'manifest';
+manifestLink.href = '<?php echo BASE_URL; ?>/manifest.json';
+document.head.appendChild(manifestLink);
     </script>
+        <!-- PWA Registration -->
+   
 </body>
 </html>
